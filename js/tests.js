@@ -7,7 +7,7 @@
 
 (function(){
     var tests = {};                 //test functions
-    var toRun = ["append"];         //names of tests to run
+    var toRun = ["observable"];         //names of tests to run
 
     tests.ready = function() {                  //ready should fire before onload
         elist.ready(function(){
@@ -37,10 +37,29 @@
             div1.innerHTML = "div1";
             var div2 = document.createElement('div');
             div2.innerHTML = "div2";
+            div2.onclick = function(){
+                alert('ololo');
+            };
             elist.wrap(document.body)
                 .append(div1)
                 .append(elist.wrap(div2))
                 .append("TEXT NODE");
+        });
+    };
+
+    tests.observable = function() {                 //subscribes two clients, updates, unsubscribes first, updates
+        elist.ready(function() {
+            var thing = elist.Observable(1);
+            var client1 = function(){
+                console.log('client1');
+            }
+            var client2 = function(){
+                console.log('client2');
+            }
+            thing.subscribe(client1).subscribe(client2);
+            thing.update(2);
+            thing.unsubscribe(client1);
+            thing.update(3);
         });
     };
     /**

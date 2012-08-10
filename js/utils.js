@@ -6,7 +6,10 @@
  */
 
 (function() {
-    this.elist = {};            //publishing namespace to window in browsers or somewhere else in other environments
+    //publishing namespace
+    if (this.elist === undefined) {
+        this.elist = {};
+    }
 
     /**
      * Checks condition and throws error with optional errorMessage if check fails
