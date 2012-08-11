@@ -5,9 +5,8 @@
  * Time: 1:15
  */
 
-"use strict";
-
 (function() {
+    "use strict";
     //publishing namespace
     if (!window.elist) {
         window.elist = {};
