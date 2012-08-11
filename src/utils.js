@@ -5,10 +5,12 @@
  * Time: 1:15
  */
 
+"use strict";
+
 (function() {
     //publishing namespace
-    if (this.elist === undefined) {
-        this.elist = {};
+    if (!window.elist) {
+        window.elist = {};
     }
 
     /**
@@ -22,8 +24,7 @@
         }
     };
 
-    elist.assert(this.document !== undefined, "Document undefined");   // checking document's presence
-    var doc = this.document;
+    var doc = window.document;
     /**
      * Fires all listeners when DOM is complete
      * @param listener

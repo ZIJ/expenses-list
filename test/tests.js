@@ -5,6 +5,8 @@
  * Time: 2:18
  */
 
+"use strict";
+
 (function(){
     var tests = {};                 //test functions
     var toRun = ["observable"];         //names of tests to run

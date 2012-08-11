@@ -5,11 +5,12 @@
  * Time: 6:01
  */
 
+"use strict";
 
 (function() {
     //publishing namespace
-    if (this.elist === undefined) {
-        this.elist = {};
+    if (!window.elist) {
+        window.elist = {};
     }
 
     /**
@@ -88,6 +89,7 @@
             }
         }
     }
+
 
 
 })();
