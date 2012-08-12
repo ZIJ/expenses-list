@@ -48,6 +48,18 @@
             start();
         });
     });
+
+    asyncTest("empty", function() {
+        expect(2);
+        elist.ready(function(){
+            document.body.appendChild(document.createElement("div"));
+            document.body.appendChild(document.createElement("div"));
+            ok(document.body.childNodes.length === 2, "Divs added");
+            elist.empty(document.body);
+            ok(document.body.childNodes.length === 0, "Divs removed");
+            start();
+        });
+    });
 }());
 
 

@@ -23,6 +23,19 @@
         return elist;
     };
     /**
+     * Removes all child nodes from element, including text nodes
+     * @param element HTMLElement
+     * @return {*}
+     */
+    elist.empty = function(element) {
+        //TODO param validation in empty()
+        var children = element.childNodes;
+        for (var i = 0; i < children.length; i+=1) {
+            element.removeChild(children[i]);
+        }
+        return element;
+    };
+    /**
      * Selects DOM element by it's ID
      * @param id
      * @return
@@ -323,6 +336,10 @@
     elist.ExpenseView = function(expenseModel){
         //TODO Param validation in ExpenseView
         this.model = expenseModel;
+        this.node = document.createElement("tr");
+        for (var i = 0; i < 6; i+=1){
+            this.node.appendChild(document.createElement("td"));
+        }
     };
 
     elist.ExpenseView.inheritFrom(elist.EventEmitter);
