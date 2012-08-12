@@ -24,14 +24,14 @@ module.exports = function(grunt) {
                 curly: true,            // no "braceless" loops
                 eqeqeq: true,           // no casting comparisons
                 forin: true,            // for..in loops with hasOwnProperty() check
-                //immed: true,          // no immediate function invokation
+                immed: true,            // no immediate function invokation
                 indent: 4,              // tab width
                 latedef: true,          // no variable usage before definition
                 newcap: true,           // capitalized constructors
                 noarg: true,            // no arguments.caller and arguments.callee
                 noempty: true,          // no empty blocks
                 nonew: true,            // no constructor invokation without assigning
-                //plusplus: true,       // no ++ and --
+                plusplus: true,         // no ++ and --
                 quotmark: true,         // consistency of quote style
                 regexp: true,           // no unsafe . in regexps
                 undef: true,            // no explicitly undefined variables

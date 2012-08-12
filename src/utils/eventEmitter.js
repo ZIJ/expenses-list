@@ -4,7 +4,7 @@
 
 (function() {
     "use strict";
-    //publishing namespace
+    // publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
@@ -56,9 +56,9 @@
         eventArgs = eventArgs || {};
         if(this.listeners[eventName]) {    // such event exists
             var count = this.listeners[eventName].length;
-            for (var i = 0; i < count; i++) {
+            for (var i = 0; i < count; i+=1) {
                 this.listeners[eventName](this, eventArgs);    // calling listener function
             }
         }
     };
-})();
+}());

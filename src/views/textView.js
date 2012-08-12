@@ -4,7 +4,7 @@
 
 (function() {
     "use strict";
-    //publishing namespace
+    // publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
@@ -23,4 +23,4 @@
            this.node.replaceWholeText(property.value);
         });
     }
-})();
+}());

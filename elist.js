@@ -81,7 +81,7 @@
         }
         return this;
     };
-})();
+}());
 
 /**
  * Created by Igor Zalutsky on 11.08.12 at 21:36
@@ -89,7 +89,7 @@
 
 (function() {
     "use strict";
-    //publishing namespace
+    // publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
@@ -141,19 +141,19 @@
         eventArgs = eventArgs || {};
         if(this.listeners[eventName]) {    // such event exists
             var count = this.listeners[eventName].length;
-            for (var i = 0; i < count; i++) {
+            for (var i = 0; i < count; i+=1) {
                 this.listeners[eventName](this, eventArgs);    // calling listener function
             }
         }
     };
-})();
+}());
 /**
  * Created by Igor Zalutsky on 10.08.12 at 1:15
  */
 
 (function() {
     "use strict";
-    //publishing namespace
+    // publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
@@ -187,14 +187,14 @@
 
 
 
-})();
+}());
 /**
  * Created Created by Igor Zalutsky on 12.08.12 at 0:09
  */
 
 (function() {
     "use strict";
-    //publishing namespace
+    // publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
@@ -258,14 +258,14 @@
     };
 
 
-})();
+}());
 /**
  * Created by Igor Zalutsky on 10.08.12 at 6:01
  */
 
 (function() {
     "use strict";
-    //publishing namespace
+    // publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
@@ -278,8 +278,11 @@
      */
     function ExpenseModel(properties) {
         if (typeof properties === "object") {
-            elist.assert (typeof properties.id !== "undefined", "ID not found in properties");
-            this.id = properties.id;
+            if (typeof properties.id === "undefined") {
+                elist.report("ID not found in properties");
+            } else {
+                this.id = properties.id;
+            }
         } else if (typeof properties === "number") {
             this.id = properties;
         } else {
@@ -304,14 +307,39 @@
         }
     };
 
-})();
+}());
+/**
+ * Created by Igor Zalutsky on 12.08.12 at 17:40
+ */
+
+(function () {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+    elist.ExpenseView = function(expenseModel){
+        //TODO Param validation in ExpenseView
+        this.model = expenseModel;
+    };
+
+    elist.ExpenseView.inheritFrom(elist.EventEmitter);
+
+    elist.ExpenseView.prototype.viewDescription = function(){
+
+    };
+
+}());
+
 /**
  * Created by Igor Zalutsky on 10.08.12 at 12:38
  */
 
 (function() {
     "use strict";
-    //publishing namespace
+    // publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
@@ -330,18 +358,18 @@
            this.node.replaceWholeText(property.value);
         });
     }
-})();
+}());
 /**
  * Created by Igor Zalutsky on 12.08.12 at 1:41
  */
 
 (function () {
     "use strict";
-    //publishing namespace
+    // publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
     var elist = window.elist;
 
 
-})();
+}());

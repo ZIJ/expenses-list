@@ -4,7 +4,7 @@
 
 (function() {
     "use strict";
-    //publishing namespace
+    // publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
@@ -17,8 +17,11 @@
      */
     function ExpenseModel(properties) {
         if (typeof properties === "object") {
-            elist.assert (typeof properties.id !== "undefined", "ID not found in properties");
-            this.id = properties.id;
+            if (typeof properties.id === "undefined") {
+                elist.report("ID not found in properties");
+            } else {
+                this.id = properties.id;
+            }
         } else if (typeof properties === "number") {
             this.id = properties;
         } else {
@@ -43,4 +46,4 @@
         }
     };
 
-})();
+}());
