@@ -1,8 +1,5 @@
 /**
- * Created with JetBrains WebStorm.
- * Author: Igor Zalutsky
- * Date: 11.08.12
- * Time: 21:36
+ * Created by Igor Zalutsky on 11.08.12 at 21:36
  */
 
 (function() {
