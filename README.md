@@ -6,6 +6,6 @@ Displays a dynamic list of expenses (description, amount, share, date) with abil
 
 Third-party tools used:
  - Git & GitHub :)
- - JetBrain WebStorm, for development
+ - JetBrains WebStorm, for development
  - Grunt.js with JSHint and UglifyJS for building, code quality analysis and minification
  - QUnit, for unit testing
