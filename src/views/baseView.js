@@ -11,9 +11,7 @@
     var elist = window.elist;
 
 
-    elist.BaseView = function() {
-        this.node = null;           //to be overridden
-    };
+    elist.BaseView = function() { };
 
     // BaseView extends EventEmitter
     elist.BaseView.inheritFrom(elist.EventEmitter);
@@ -21,6 +19,7 @@
     elist.BaseView.prototype.renderTo = function(element) {
         //TODO param validation in renderTo()
         element.appendChild(this.node);
+        this.parentNode = element;
         return this;
     };
 

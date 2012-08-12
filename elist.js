@@ -370,9 +370,7 @@
     var elist = window.elist;
 
 
-    elist.BaseView = function() {
-        this.node = null;           //to be overridden
-    };
+    elist.BaseView = function() { };
 
     // BaseView extends EventEmitter
     elist.BaseView.inheritFrom(elist.EventEmitter);
@@ -380,6 +378,7 @@
     elist.BaseView.prototype.renderTo = function(element) {
         //TODO param validation in renderTo()
         element.appendChild(this.node);
+        this.parentNode = element;
         return this;
     };
 
@@ -400,22 +399,25 @@
     elist.ExpenseView = function(expenseModel){
         //TODO Param validation in ExpenseView
         this.model = expenseModel;
+        this.parentNode = null;
         this.node = document.createElement("tr");
         for (var i = 0; i < 6; i+=1){
             this.node.appendChild(document.createElement("td"));
         }
+        this.viewDescription();
     };
 
     elist.ExpenseView.inheritFrom(elist.BaseView);
 
     elist.ExpenseView.prototype.viewDescription = function(){
+        var model = this.model;
         var td = this.node.children[0];
-        var text = document.createTextNode(this.model.description.get());
-        /*
-        text.onclick = function() {
-            console.log("click");
-        };*/
-        elist.empty(td).appendChild(text);
+        var update = function(){
+            var text = document.createTextNode(model.description.get());
+            elist.empty(td).appendChild(text);
+        };
+        model.description.notify(update);
+        update();
     };
 
 }());
@@ -458,7 +460,21 @@
     }
     var elist = window.elist;
 
-    var model = new elist.ExpenseModel(13);
+    elist.ready(function(){
+        var model = new elist.ExpenseModel(13);
+        model.description.set("Description");
+        var view = new elist.ExpenseView(model);
+
+        var table = document.createElement("table");
+        view.renderTo(table);
+
+        document.body.appendChild(table);
+
+        setTimeout(function(){
+            model.description.set("Updated");
+        }, 1000);
+    });
+
 
 
 }());

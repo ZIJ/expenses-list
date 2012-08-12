@@ -13,22 +13,25 @@
     elist.ExpenseView = function(expenseModel){
         //TODO Param validation in ExpenseView
         this.model = expenseModel;
+        this.parentNode = null;
         this.node = document.createElement("tr");
         for (var i = 0; i < 6; i+=1){
             this.node.appendChild(document.createElement("td"));
         }
+        this.viewDescription();
     };
 
     elist.ExpenseView.inheritFrom(elist.BaseView);
 
     elist.ExpenseView.prototype.viewDescription = function(){
+        var model = this.model;
         var td = this.node.children[0];
-        var text = document.createTextNode(this.model.description.get());
-        /*
-        text.onclick = function() {
-            console.log("click");
-        };*/
-        elist.empty(td).appendChild(text);
+        var update = function(){
+            var text = document.createTextNode(model.description.get());
+            elist.empty(td).appendChild(text);
+        };
+        model.description.notify(update);
+        update();
     };
 
 }());

@@ -10,7 +10,21 @@
     }
     var elist = window.elist;
 
-    var model = new elist.ExpenseModel(13);
+    elist.ready(function(){
+        var model = new elist.ExpenseModel(13);
+        model.description.set("Description");
+        var view = new elist.ExpenseView(model);
+
+        var table = document.createElement("table");
+        view.renderTo(table);
+
+        document.body.appendChild(table);
+
+        setTimeout(function(){
+            model.description.set("Updated");
+        }, 1000);
+    });
+
 
 
 }());
