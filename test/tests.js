@@ -129,7 +129,7 @@
         emitter.emit("event", "something");
     });
 
-    test("Emitters intersection", function(){
+    test("Emitters property sharing", function(){
         expect(2);
         var emitter1 = new elist.EventEmitter();
         emitter1.on("event", function(origin, args){
