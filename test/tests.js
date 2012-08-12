@@ -1,12 +1,16 @@
 /**
- * Created by Igor Zalutsky on 12.08.12 at 2:50
+ * Created by Igor Zalutsky on 12.08.12 at 18:32
  */
 
 // registering QUnit globals for JSHint
 /*global test:false asyncTest:false start:false expect:false ok:false */
 
-(function(){
+(function () {
     "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
     var elist = window.elist;
 
     asyncTest("ready", function() {
@@ -22,26 +26,26 @@
         };
     });
 
-
-    test("inheritFrom", function() {
+    asyncTest("byId", function() {
         expect(1);
-        function A() {
-            this.fromA = true;
-        }
-        function B(){ }
-        B.inheritFrom(A);
-        var instance = new B();
-        ok(instance.fromA, "B instance has A property");
+        elist.ready(function(){
+            var id = 13;
+            var elem = document.createElement("div");
+            elem.id = id;
+            document.body.appendChild(elem);
+            var found = elist.byId(id);
+            ok(!found.isEmpty, "Div found");
+            start();
+        });
     });
 
-    asyncTest("byId, remove", function() {
-        expect(2);
+    asyncTest("remove", function() {
+        expect(1);
         elist.ready(function(){
             var elem = document.createElement("div");
             elem.id = 13;
             document.body.appendChild(elem);
             var found = elist.byId(13);
-            ok(!found.isEmpty, "Div found");
             found.remove();
             var notfound = elist.byId(13);
             ok(notfound.isEmpty, "Div removed");
@@ -60,6 +64,33 @@
             start();
         });
     });
+
+
+}());
+
+/**
+ * Created by Igor Zalutsky on 12.08.12 at 2:50
+ */
+
+// registering QUnit globals for JSHint
+/*global test:false asyncTest:false start:false expect:false ok:false */
+
+(function(){
+    "use strict";
+    var elist = window.elist;
+
+
+    test("inheritFrom", function() {
+        expect(1);
+        function A() {
+            this.fromA = true;
+        }
+        function B(){ }
+        B.inheritFrom(A);
+        var instance = new B();
+        ok(instance.fromA, "B instance has A property");
+    });
+
 }());
 
 

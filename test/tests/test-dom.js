@@ -26,14 +26,26 @@
         };
     });
 
-    asyncTest("byId, remove", function() {
-        expect(2);
+    asyncTest("byId", function() {
+        expect(1);
+        elist.ready(function(){
+            var id = 13;
+            var elem = document.createElement("div");
+            elem.id = id;
+            document.body.appendChild(elem);
+            var found = elist.byId(id);
+            ok(!found.isEmpty, "Div found");
+            start();
+        });
+    });
+
+    asyncTest("remove", function() {
+        expect(1);
         elist.ready(function(){
             var elem = document.createElement("div");
             elem.id = 13;
             document.body.appendChild(elem);
             var found = elist.byId(13);
-            ok(!found.isEmpty, "Div found");
             found.remove();
             var notfound = elist.byId(13);
             ok(notfound.isEmpty, "Div removed");
