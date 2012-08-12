@@ -19,10 +19,16 @@
         }
     };
 
-    elist.ExpenseView.inheritFrom(elist.EventEmitter);
+    elist.ExpenseView.inheritFrom(elist.BaseView);
 
     elist.ExpenseView.prototype.viewDescription = function(){
-
+        var td = this.node.children[0];
+        var text = document.createTextNode(this.model.description.get());
+        /*
+        text.onclick = function() {
+            console.log("click");
+        };*/
+        elist.empty(td).appendChild(text);
     };
 
 }());

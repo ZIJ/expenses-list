@@ -25,11 +25,12 @@
      */
     elist.EventEmitter.prototype.on = function(eventName, listenerFunc) {
         //TODO params validation in EventEmitter.on
-        if (!this.listeners[eventName]) {                                  // no such event
-            this.listeners.eventName = [];
+
+        if (!(this.listeners[eventName] instanceof Array)) {                                  // no such event
+            this.listeners[eventName] = [];
         }
         if (this.listeners[eventName].indexOf(listenerFunc) === -1) {      //listenerFunc is not yet subscribed
-            this.listeners.eventName.push(listenerFunc);
+            this.listeners[eventName].push(listenerFunc);
         }
     };
     /**
@@ -39,7 +40,7 @@
      */
     elist.EventEmitter.prototype.off = function(eventName, listenerFunc) {
         //TODO params validation in EventEmitter.off
-        if(this.listeners[eventName]) {    // such event exists
+        if(this.listeners[eventName] instanceof Array) {    // such event exists
             var index = this.listeners[eventName].indexOf(listenerFunc);
             if (index !== -1) {         // and this func listens to it
                 this.listeners[eventName].splice(index,1);     // removing listener
@@ -54,10 +55,10 @@
     elist.EventEmitter.prototype.emit = function(eventName, eventArgs) {
         //TODO params validation in EventEmitter.cause
         eventArgs = eventArgs || {};
-        if(this.listeners[eventName]) {    // such event exists
+        if(this.listeners[eventName] instanceof Array) {    // such event exists
             var count = this.listeners[eventName].length;
             for (var i = 0; i < count; i+=1) {
-                this.listeners[eventName](this, eventArgs);    // calling listener function
+                this.listeners[eventName][i](this, eventArgs);    // calling listener function
             }
         }
     };

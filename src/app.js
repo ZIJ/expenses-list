@@ -10,5 +10,7 @@
     }
     var elist = window.elist;
 
+    var model = new elist.ExpenseModel(13);
+
 
 }());

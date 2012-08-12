@@ -31,6 +31,7 @@
         //TODO param validation in empty()
         var children = element.childNodes;
         for (var i = 0; i < children.length; i+=1) {
+            //TODO possible memory leak in empty()
             element.removeChild(children[i]);
         }
         return element;

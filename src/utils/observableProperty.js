@@ -16,20 +16,8 @@
      *   getter - function
      * @constructor
      */
-    elist.ObservableProperty = function(options) {
-        //TODO Optimize options validation in ObservableProperty
-        options = options || {};
-        if (typeof options === "object") {
-            this.value = options.value || null;
-        } else {    //allows primitive values as a param
-            this.value = options;
-        }
-        this.getter = options.getter || function(){
-            return this.value;
-        };
-        this.setter = options.setter || function(newValue){
-            this.value = newValue;
-        };
+    elist.ObservableProperty = function(initialValue) {
+        this.value = initialValue;
     };
     /**
      * ObservableProperty extends EventEmitter
@@ -40,7 +28,7 @@
      * @return {*}
      */
     elist.ObservableProperty.prototype.get = function(){
-        return this.getter(this.value);
+        return this.value;
     };
     /**
      * Executes setter and notifies listeners
@@ -48,7 +36,7 @@
      */
     elist.ObservableProperty.prototype.set = function(newValue){
         if (this.value !== newValue) {
-            this.setter(newValue);
+            this.value = newValue;
             this.emit("change");
         }
     };
