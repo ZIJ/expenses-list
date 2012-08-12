@@ -2,14 +2,13 @@
  * Created by Igor Zalutsky on 10.08.12 at 12:38
  */
 
-"use strict";
-
 (function() {
     "use strict";
     //publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
+    var elist = window.elist;
     /**
      *
      * @param property an Observable instance

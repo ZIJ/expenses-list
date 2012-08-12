@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
         lint: {
-            all: ['grunt.js', 'src/*.js', 'test/*.js']
+            all: ['grunt.js', 'src/**/*.js', 'test/tests/*.js']
         },
         jshint: {
             options: {
@@ -19,19 +19,23 @@ module.exports = function(grunt) {
         },
         concat: {
             app: {
-                src: ['src/utils.js', 'src/eventEmitter.js', 'src/models.js', 'src/views.js'],
-                dest: 'app.js'
+                src: ['src/utils/*.js', 'src/models/*.js', 'src/views/*.js', 'src/controllers/*.js', 'src/*.js'],
+                dest: 'elist.js'
+            },
+            test: {
+                src: ['test/tests/*.js'],
+                dest: 'test/tests.js'
             }
         },
         min: {
-            app: {
-                src: ['app.js'],
-                dest: 'app.min.js'
+            all: {
+                src: ['elist.js'],
+                dest: 'elist.min.js'
             }
         }
     });
 
     // Default task.
-    grunt.registerTask('default', 'lint concat min');
+    grunt.registerTask('default', 'lint concat:app min concat:test');
 
 };

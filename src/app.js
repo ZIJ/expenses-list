@@ -8,6 +8,7 @@
     if (!window.elist) {
         window.elist = {};
     }
+    var elist = window.elist;
 
 
 })();

@@ -8,13 +8,14 @@
     if (!window.elist) {
         window.elist = {};
     }
+    var elist = window.elist;
     /**
      * Provides interface for subscribing, unsubscribing to events and causing them
      * @constructor
      */
     elist.EventEmitter = function(){
         this.listeners = {};
-    }
+    };
     /**
      * Subscribes listenerFunc to the the specified event
      * @param eventName {string} Name of event to be listened
@@ -44,7 +45,7 @@
                 this.listeners[eventName].splice(index,1);     // removing listener
             }
         }
-    }
+    };
     /**
      *
      * @param eventName {string} Name of event to be caused
@@ -52,12 +53,12 @@
      */
     elist.EventEmitter.prototype.emit = function(eventName, eventArgs) {
         //TODO params validation in EventEmitter.cause
-        var eventArgs = eventArgs || {};
+        eventArgs = eventArgs || {};
         if(this.listeners[eventName]) {    // such event exists
             var count = this.listeners[eventName].length;
             for (var i = 0; i < count; i++) {
                 this.listeners[eventName](this, eventArgs);    // calling listener function
             }
         }
-    }
+    };
 })();

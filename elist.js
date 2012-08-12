@@ -1,28 +1,16 @@
 /**
- * Created with JetBrains WebStorm.
- * Author: Igor Zalutsky
- * Date: 10.08.12
- * Time: 1:15
+ * Created by Igor Zalutsky on 12.08.12 at 1:28
  */
 
-(function() {
+(function () {
     "use strict";
-    //publishing namespace
+
+    // publishing namespace
     if (!window.elist) {
         window.elist = {};
     }
-
-    /**
-     * Checks condition and throws error with optional errorMessage if check fails
-     * @param condition
-     * @param errorMessage Optional, "Assertion failed" by default
-     */
-    elist.assert = function(condition, errorMessage) {
-        if (!condition) {
-            throw new Error(errorMessage ? errorMessage : "Assertion failed");
-        }
-    };
-
+    var elist = window.elist;
+    // shortcutting document
     var doc = window.document;
     /**
      * Fires all listeners when DOM is complete
@@ -50,7 +38,7 @@
      */
     elist.wrap = function(element) {
         return new Wrapper(element);
-    }
+    };
     /**
      * Wraps DOM node adding some useful features
      * @param element
@@ -87,19 +75,16 @@
 
         if (!this.isEmpty()) {
             var toInsert = content instanceof Wrapper ? content.element :
-                           content instanceof HTMLElement ? content :
-                           doc.createTextNode(content);
+                content instanceof HTMLElement ? content :
+                    doc.createTextNode(content);
             this.element.appendChild(toInsert);
         }
         return this;
     };
-
 })();
+
 /**
- * Created with JetBrains WebStorm.
- * Author: Igor Zalutsky
- * Date: 11.08.12
- * Time: 21:36
+ * Created by Igor Zalutsky on 11.08.12 at 21:36
  */
 
 (function() {
@@ -108,13 +93,14 @@
     if (!window.elist) {
         window.elist = {};
     }
+    var elist = window.elist;
     /**
      * Provides interface for subscribing, unsubscribing to events and causing them
      * @constructor
      */
     elist.EventEmitter = function(){
         this.listeners = {};
-    }
+    };
     /**
      * Subscribes listenerFunc to the the specified event
      * @param eventName {string} Name of event to be listened
@@ -144,7 +130,7 @@
                 this.listeners[eventName].splice(index,1);     // removing listener
             }
         }
-    }
+    };
     /**
      *
      * @param eventName {string} Name of event to be caused
@@ -152,23 +138,18 @@
      */
     elist.EventEmitter.prototype.emit = function(eventName, eventArgs) {
         //TODO params validation in EventEmitter.cause
-        var eventArgs = eventArgs || {};
+        eventArgs = eventArgs || {};
         if(this.listeners[eventName]) {    // such event exists
             var count = this.listeners[eventName].length;
             for (var i = 0; i < count; i++) {
                 this.listeners[eventName](this, eventArgs);    // calling listener function
             }
         }
-    }
+    };
 })();
 /**
- * Created with JetBrains WebStorm.
- * Author: Igor Zalutsky
- * Date: 10.08.12
- * Time: 6:01
+ * Created by Igor Zalutsky on 10.08.12 at 1:15
  */
-
-"use strict";
 
 (function() {
     "use strict";
@@ -176,7 +157,48 @@
     if (!window.elist) {
         window.elist = {};
     }
+    var elist = window.elist;
+    /**
+     * Extends a constructor with BaseConstructor's prototype
+     * @param BaseConstructor
+     */
+    Function.prototype.inheritFrom = function(BaseConstructor){
+        var sampleInstance = new BaseConstructor();
+        this.prototype = sampleInstance;
+    };
+    /**
+     * Throw an error with custom message
+     * @param errorMessage Optional, "Something went wrong" by default
+     */
+    elist.report = function(errorMessage) {
+        throw new Error(errorMessage ? errorMessage : "Something went wrong");
+    };
 
+    /**
+     * Checks condition and reports if check fails
+     * @param condition
+     * @param errorMessage Optional, "Assertion failed" by default
+     */
+    elist.assert = function(condition, errorMessage) {
+        if (!condition) {
+            elist.report(errorMessage ? errorMessage : "Assertion failed");
+        }
+    };
+
+
+
+})();
+/**
+ * Created by Igor Zalutsky on 12.08.12 at 1:49
+ */
+
+(function () {
+    "use strict";
+    //publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
     /**
      * Observable factory
      * @param initialValue
@@ -226,19 +248,109 @@
         }
         return this;
     };
+})();
+
+/**
+ * Created Created by Igor Zalutsky on 12.08.12 at 0:09
+ */
+
+(function() {
+    "use strict";
+    //publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+    /**
+     * Property that notifies listeners when it's value changes through set()
+     * @param options
+     *   value - initial property value
+     *   getter - function
+     * @constructor
+     */
+    elist.ObservableProperty = function(options) {
+        //TODO Optimize options validation in ObservableProperty
+        options = options || {};
+        if (typeof options === "object") {
+            this.value = options.value || null;
+        } else {    //allows primitive values as a param
+            this.value = options;
+        }
+        this.getter = options.getter || function(){
+            return this.value;
+        };
+        this.setter = options.setter || function(newValue){
+            this.value = newValue;
+        };
+    };
+    /**
+     * ObservableProperty extends EventEmitter
+     */
+    elist.ObservableProperty.inheritFrom(elist.EventEmitter);
+    /**
+     * Executes getter
+     * @return {*}
+     */
+    elist.ObservableProperty.prototype.get = function(){
+        return this.getter(this.value);
+    };
+    /**
+     * Executes setter and notifies listeners
+     * @param newValue
+     */
+    elist.ObservableProperty.prototype.set = function(newValue){
+        if (this.value !== newValue) {
+            this.setter(newValue);
+            this.emit("change");
+        }
+    };
+    /**
+     * Shorcut for on("change", listener)
+     * @param listenerFunc
+     */
+    elist.ObservableProperty.prototype.notify = function(listenerFunc) {
+        this.on("change", listenerFunc);
+    };
+    /**
+     * Shorcut for off("change", listener)
+     * @param listenerFunc
+     */
+    elist.ObservableProperty.prototype.ignore = function(listenerFunc) {
+        this.off("change", listenerFunc);
+    };
+
+
+})();
+/**
+ * Created by Igor Zalutsky on 10.08.12 at 6:01
+ */
+
+(function() {
+    "use strict";
+    //publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
 
     /**
      * Model of Expense entity with observable properties
-     * @param properties
+     * @param properties Object with initial property values (id required) or id
      * @constructor
      */
     function ExpenseModel(properties) {
-        elist.assert(properties !== undefined, "Should have at least ID");
-        this.id = properties.id;
-        this.description = elist.Observable();
-        this.date = elist.Observable();
-        this.amount = elist.Observable();
-        this.isActive = elist.Observable();
+        if (typeof properties === "object") {
+            elist.assert (typeof properties.id !== "undefined", "ID not found in properties");
+            this.id = properties.id;
+        } else if (typeof properties === "number") {
+            this.id = properties;
+        } else {
+            elist.report("Properties should be object or number");
+        }
+        this.description = new elist.ObservableProperty("");
+        this.date = new elist.ObservableProperty(new Date());
+        this.amount = new elist.ObservableProperty(0);
+        this.isActive = new elist.ObservableProperty(true);
         this.assign(properties);
     }
 
@@ -252,19 +364,12 @@
                 this[name].update(properties[name]);
             }
         }
-    }
-
-
+    };
 
 })();
 /**
- * Created with JetBrains WebStorm.
- * Author: Igor Zalutsky
- * Date: 10.08.12
- * Time: 12:38
+ * Created by Igor Zalutsky on 10.08.12 at 12:38
  */
-
-"use strict";
 
 (function() {
     "use strict";
@@ -272,6 +377,7 @@
     if (!window.elist) {
         window.elist = {};
     }
+    var elist = window.elist;
     /**
      *
      * @param property an Observable instance
@@ -286,4 +392,18 @@
            this.node.replaceWholeText(property.value);
         });
     }
+})();
+/**
+ * Created by Igor Zalutsky on 12.08.12 at 1:41
+ */
+
+(function () {
+    "use strict";
+    //publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+
 })();

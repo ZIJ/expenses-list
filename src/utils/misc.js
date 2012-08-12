@@ -8,6 +8,7 @@
     if (!window.elist) {
         window.elist = {};
     }
+    var elist = window.elist;
     /**
      * Extends a constructor with BaseConstructor's prototype
      * @param BaseConstructor
@@ -31,7 +32,7 @@
      */
     elist.assert = function(condition, errorMessage) {
         if (!condition) {
-            report(errorMessage ? errorMessage : "Assertion failed");
+            elist.report(errorMessage ? errorMessage : "Assertion failed");
         }
     };
 
