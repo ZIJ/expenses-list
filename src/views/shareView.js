@@ -14,6 +14,7 @@
         //TODO property validation in ShareView()
         var view = this;
         this.listeners = {};
+        this.isVisible = false;
         this.prop = property;
         this.parentNode = null;
 

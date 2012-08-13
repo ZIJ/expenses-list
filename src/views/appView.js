@@ -15,8 +15,10 @@
         var model = appModel;
         var view = this;
         this.listeners = {};
+        this.isVisible = false;
         this.model = appModel;
         this.parentNode = null;
+        this.invertSort = false;
 
         this.totalActiveAmount = 0;
 
@@ -44,6 +46,9 @@
         // search input
         this.searchInput = document.createElement("input");
         this.searchInput.type = "text";
+        this.searchInput.addEventListener("input",function(){
+            view.filter(view.searchInput.value);
+        },false);
         this.searchLabel.appendChild(this.searchInput);
 
         // table
@@ -53,12 +58,26 @@
         // table headings
         this.headings = document.createElement("tr");
         this.table.appendChild(this.headings);
+
         var titles = ["Что", "Когда", "Сколько", "Доля", "Считать", "Удалить"];
         for (var i = 0; i < titles.length; i+=1){
             var th = document.createElement("th");
             th.innerHTML = titles[i];
             this.headings.appendChild(th);
         }
+
+        this.headings.children[0].addEventListener("click",function(){
+            view.sortBy("description");
+        }, false);
+        this.headings.children[1].addEventListener("click",function(){
+            view.sortBy("date");
+        }, false);
+        this.headings.children[2].addEventListener("click",function(){
+            view.sortBy("amount");
+        }, false);
+        this.headings.children[3].addEventListener("click",function(){
+            view.sortBy("amount");
+        }, false);
 
 
         this.views = new elist.ObservableCollection();
@@ -81,7 +100,6 @@
         });
 
         this.updateTotalActiveAmount();
-
     };
 
     elist.AppView.inheritFrom(elist.BaseView);
@@ -115,9 +133,45 @@
 
     elist.AppView.prototype.deleteExpense = function(expenseView){
         //TODO Clear listeners for preventing memory leaks when deleting views
+        expenseView.model.isActive.set(false);
         expenseView.hide();
         this.views.remove(expenseView);
-        this.model.removeModel(expenseView.model);
+        this.model.deleteModel(expenseView.model);
+        //this.updateTotalActiveAmount();
     };
+
+    elist.AppView.prototype.sortBy = function(propName){
+        if(propName) {
+            this.views.each(function(expenseView){
+                expenseView.hide();
+            });
+            this.views.orderBy(function(expenseView){
+                return expenseView.model[propName].get();
+            }, this.invertSort);
+            this.invertSort = !this.invertSort;
+            this.views.each(function(expenseView){
+                expenseView.show();
+            });
+        }
+
+    };
+
+    elist.AppView.prototype.filter = function(str) {
+        if (str.length > 0) {
+            this.views.each(function(expenseView){
+                var description = expenseView.model.description.get();
+                if (description.indexOf(str) === -1){
+                    expenseView.hide();
+                } else {
+                    expenseView.show();
+                }
+            });
+        } else {
+            this.views.each(function(expenseView){
+                expenseView.show();
+            });
+        }
+    };
+
 
 }());

@@ -40,24 +40,6 @@
 
         view.renderTo(document.body);
 
-        /*
-        var model = new elist.ExpenseModel(13);
-        model.description.set("Some text");
-        model.amount.set(13);
-
-        var view = new elist.ExpenseView(model);
-
-        var table = document.createElement("table");
-        view.renderTo(table);
-
-        document.body.appendChild(table);
-
-        setTimeout(function(){
-            model.description.set("Updated");
-        }, 1000);
-        */
     });
-
-
 
 }());

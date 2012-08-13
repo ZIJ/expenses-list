@@ -20,6 +20,7 @@
         this.prop = property;
         this.parentNode = null;
         this.listeners = {};
+        this.isVisible = false;
 
         this.node = document.createElement("p");
 

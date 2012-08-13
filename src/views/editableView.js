@@ -20,6 +20,7 @@
         //TODO params validation in EditableView()
         var view = this;
         this.listeners = {};
+        this.isVisible = false;
         this.prop = property;
         this.parentNode = null;
 

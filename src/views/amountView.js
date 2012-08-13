@@ -19,6 +19,7 @@
         //TODO property validation in AmountView()
         var view = this;
         this.listeners = {};
+        this.isVisible = false;
         this.prop = property;
         this.parentNode = null;
 

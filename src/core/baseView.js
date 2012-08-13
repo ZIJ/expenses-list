@@ -13,6 +13,7 @@
 
     elist.BaseView = function() {
         this.listeners = {};
+        this.isVisible = false;
     };
 
     // BaseView extends EventEmitter
@@ -34,19 +35,23 @@
      * @return {*}
      */
     elist.BaseView.prototype.show = function() {
-        if (!this.parentNode) {
-            elist.report("Parent node unknown. Call renderTo() first.");
+        if (!this.isVisible){
+            if (!this.parentNode) {
+                elist.report("Parent node unknown. Call renderTo() first.");
+            }
+            this.parentNode.appendChild(this.node);
+            this.isVisible = true;
         }
-        this.parentNode.appendChild(this.node);
         return this;
     };
 
     elist.BaseView.prototype.hide = function() {
-        if (this.parentNode) {
+        if (this.isVisible && this.parentNode) {
             //TODO Find out why removeChild causes DOM Exception 8
             try {
                 this.parentNode.removeChild(this.node);
             } catch (e) {}
+            this.isVisible = false;
         }
     };
 

@@ -15,6 +15,7 @@
         var view = this;
         var model = expenseModel;
         this.listeners = {};
+        this.isVisible = false;
         this.model = expenseModel;
         this.parentNode = null;
 
