@@ -42,7 +42,7 @@ module.exports = function(grunt) {
         concat: {
             app: {
                 src: ['src/utils/*.js',
-                      'src/core/eventEmitter.js', 'src/core/observableProperty.js',
+                      'src/core/eventEmitter.js', 'src/core/observableProperty.js', 'src/core/observableCollection.js',
                       'src/core/baseModel.js', 'src/core/baseView.js',
                       'src/models/*.js', 'src/views/*.js', 'src/controllers/*.js', 'src/*.js'],
                 dest: 'elist.js'

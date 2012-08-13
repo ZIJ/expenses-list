@@ -157,6 +157,23 @@
         prop2.set(20);
     });
 
+    test("ObservableCollection", function(){
+       expect(6);
+       var collection = new elist.ObservableCollection();
+       collection.notify(function(){
+            ok(true, "collection changed");
+       });
+        collection.add("a3");
+        collection.add("b2");
+        collection.add("d4");
+        collection.add("c1");
+        collection.orderBy(function(item){
+            return item.substr(1);
+        });
+        ok(collection.at(0) === "c1" && collection.at(3) === "d4", "At, SortBy and OrderBy work");
+
+    });
+
 }());
 
 

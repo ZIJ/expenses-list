@@ -21,10 +21,11 @@
         view.renderTo(table);
 
         document.body.appendChild(table);
-
+        /*
         setTimeout(function(){
             model.description.set("Updated");
         }, 1000);
+        */
     });
 
 
