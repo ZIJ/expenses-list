@@ -1,0 +1,8 @@
+- Initial task analysis: 2h
+- Architecture planning: 5h
+- Project organization: 1h
+- Core implementation: 4h
+- Models implementation: 2h
+- Views implementation: 6h
+- Unit testing: 2h
+- Debugging: 4h
