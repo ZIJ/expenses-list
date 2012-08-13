@@ -513,18 +513,31 @@
 
     /**
     * Model of entire app
-    * @param descriptors Object with expeneModel descriptors
+    * @param descriptors Object with expenseModel descriptors
         * @constructor
     */
     elist.AppModel = function(descriptors) {
         //TODO descriptors validation in AppModel()
-        this.expenses = [];
+
+        var model = this;
+
+        this.expenses = new elist.ObservableCollection();
         for (var i = 0; i < descriptors.length; i+=1) {
             var id = descriptors[i].id;
-            var props = descriptors[i].props;
-            var expense = new elist.ExpenseModel(id, props);
-            this.expenses.push(expense);
+            var properties = descriptors[i].props;
+            var expense = new elist.ExpenseModel(id, properties);
+            this.expenses.add(expense);
         }
+
+        this.sortBy = new elist.ObservableProperty(null);
+        this.sortBy.notify(function(){
+            model.expenses.orderBy(function(expense){
+                // getting value of property with name from sortBy
+                var key = model.sortBy.get();
+                return expense[key].get();
+            });
+        });
+        this.sortBy.set("amount");
     };
 
     // ExpenseModel extends BaseModel
@@ -952,7 +965,32 @@
     }
     var elist = window.elist;
 
+    elist.descriptors = [
+        {
+            id: 1,
+            props: {
+                description: "Корм коту",
+                amount: 5
+            }
+        },{
+            id: 2,
+            props: {
+                description: "Батарейки",
+                amount: 3
+            }
+        },{
+            id: 3,
+            props: {
+                description: "Хот-дог",
+                amount: 3
+            }
+        }
+    ];
+
     elist.ready(function(){
+
+
+        /*
         var model = new elist.ExpenseModel(13);
         model.description.set("Some text");
         model.amount.set(13);
@@ -963,7 +1001,7 @@
         view.renderTo(table);
 
         document.body.appendChild(table);
-        /*
+
         setTimeout(function(){
             model.description.set("Updated");
         }, 1000);

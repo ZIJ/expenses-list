@@ -22,4 +22,14 @@
         ok(model.amount.get() === 100, "Properties pre-assign works");
     });
 
+    test("appModel", function(){
+        expect(2);
+        var model = new elist.AppModel(elist.descriptors);
+        model.expenses.notify(function(){
+            ok(true, "Expenses resorted");
+        });
+        model.sortBy.set("date");
+        model.sortBy.set("description");
+    });
+
 }());
