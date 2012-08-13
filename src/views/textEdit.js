@@ -46,5 +46,11 @@
     elist.TextEdit.prototype.update = function(){
         this.node.value = this.prop.get();
     };
+    /**
+     * Returns value from markup
+     */
+    elist.TextEdit.prototype.getValue = function(){
+        return this.node.value;
+    };
 
 }());

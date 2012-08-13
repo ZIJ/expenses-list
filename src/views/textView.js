@@ -38,6 +38,12 @@
     elist.TextView.prototype.update = function(){
         this.node.innerHTML = this.prop.get();
     };
+    /**
+     * Returns value from markup
+     */
+    elist.TextView.prototype.getValue = function(){
+        return this.node.innerHTML;
+    };
 
 
 }());
