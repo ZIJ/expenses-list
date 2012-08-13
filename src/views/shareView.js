@@ -32,7 +32,7 @@
      */
     elist.ShareView.prototype.update = function(){
         var share = this.prop.get();
-        if (share <= 0) {
+        if (isNaN(share) || share <= 0) {
             this.node.innerHTML = "--";
         }  else {
             this.node.innerHTML = Math.round(share * 100) + " %";
