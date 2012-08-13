@@ -28,18 +28,30 @@
             this.expenses.add(expense);
         }
 
-        this.sortBy = new elist.ObservableProperty(null);
-        this.sortBy.notify(function(){
-            model.expenses.orderBy(function(expense){
-                // getting value of property with name from sortBy
-                var key = model.sortBy.get();
-                return expense[key].get();
-            });
-        });
-        this.sortBy.set("amount");
     };
 
-    // ExpenseModel extends BaseModel
+    // AppModel extends BaseModel
     elist.AppModel.inheritFrom(elist.BaseModel);
+
+    /**
+     * Returns a fresh new unused ID
+     * @return {Number}
+     */
+    elist.AppModel.prototype.nextId = function(){
+        var maxId = 0;
+        this.expenses.each(function(expenseModel){
+            maxId = Math.max(maxId, expenseModel.id);
+        });
+        return maxId + 1;
+    };
+    /**
+     * Creates new ExpenseModel with default property values and adds it to this.expenses collection
+     * @return {elist.ExpenseModel}
+     */
+    elist.AppModel.prototype.createModel = function(){
+        var expense = new elist.ExpenseModel(this.nextId());
+        this.expenses.add(expense);
+        return expense;
+    };
 
 }());

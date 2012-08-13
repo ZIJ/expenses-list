@@ -542,19 +542,31 @@
             this.expenses.add(expense);
         }
 
-        this.sortBy = new elist.ObservableProperty(null);
-        this.sortBy.notify(function(){
-            model.expenses.orderBy(function(expense){
-                // getting value of property with name from sortBy
-                var key = model.sortBy.get();
-                return expense[key].get();
-            });
-        });
-        this.sortBy.set("amount");
     };
 
-    // ExpenseModel extends BaseModel
+    // AppModel extends BaseModel
     elist.AppModel.inheritFrom(elist.BaseModel);
+
+    /**
+     * Returns a fresh new unused ID
+     * @return {Number}
+     */
+    elist.AppModel.prototype.nextId = function(){
+        var maxId = 0;
+        this.expenses.each(function(expenseModel){
+            maxId = Math.max(maxId, expenseModel.id);
+        });
+        return maxId + 1;
+    };
+    /**
+     * Creates new ExpenseModel with default property values and adds it to this.expenses collection
+     * @return {elist.ExpenseModel}
+     */
+    elist.AppModel.prototype.createModel = function(){
+        var expense = new elist.ExpenseModel(this.nextId());
+        this.expenses.add(expense);
+        return expense;
+    };
 
 }());
 
@@ -674,6 +686,9 @@
         this.createButton = document.createElement("button");
         this.createButton.type = "button";
         this.createButton.innerHTML = "Создать";
+        this.createButton.addEventListener("click", function(){
+            view.createExpense();
+        }, false);
         this.bar.appendChild(this.createButton);
 
         // search label
@@ -733,6 +748,18 @@
             var amount = expenseView.activeAmount.get();
             expenseView.activeShare.set(amount / total);
         });
+    };
+
+    elist.AppView.prototype.createExpense = function(){
+        var appView = this;
+        var model = this.model.createModel();
+        var view = new elist.ExpenseView(model);
+        this.views.add(view);
+        view.renderTo(this.table);
+        view.activeAmount.notify(function(){
+            appView.updateTotalActiveAmount();
+        });
+        view.editAll();
     };
 
 }());
@@ -946,6 +973,12 @@
         var isActive = this.model.isActive.get();
         var amount = this.model.amount.get();
         this.activeAmount.set(isActive ? amount : 0);
+    };
+
+    elist.ExpenseView.prototype.editAll = function(){
+        this.descriptionControl.edit();
+        this.dateControl.edit();
+        this.amountControl.edit();
     };
 
 }());

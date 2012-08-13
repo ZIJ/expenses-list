@@ -31,6 +31,9 @@
         this.createButton = document.createElement("button");
         this.createButton.type = "button";
         this.createButton.innerHTML = "Создать";
+        this.createButton.addEventListener("click", function(){
+            view.createExpense();
+        }, false);
         this.bar.appendChild(this.createButton);
 
         // search label
@@ -90,6 +93,18 @@
             var amount = expenseView.activeAmount.get();
             expenseView.activeShare.set(amount / total);
         });
+    };
+
+    elist.AppView.prototype.createExpense = function(){
+        var appView = this;
+        var model = this.model.createModel();
+        var view = new elist.ExpenseView(model);
+        this.views.add(view);
+        view.renderTo(this.table);
+        view.activeAmount.notify(function(){
+            appView.updateTotalActiveAmount();
+        });
+        view.editAll();
     };
 
 }());

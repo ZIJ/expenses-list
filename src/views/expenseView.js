@@ -56,4 +56,10 @@
         this.activeAmount.set(isActive ? amount : 0);
     };
 
+    elist.ExpenseView.prototype.editAll = function(){
+        this.descriptionControl.edit();
+        this.dateControl.edit();
+        this.amountControl.edit();
+    };
+
 }());
