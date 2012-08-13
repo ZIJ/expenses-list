@@ -20,6 +20,7 @@
         var view = this;
         this.prop = property;
         this.parentNode = null;
+        this.inputType = inputType;
 
         //TODO input type validation in InputEdit()
         this.node = document.createElement("input");

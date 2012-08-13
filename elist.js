@@ -196,6 +196,9 @@
     elist.keyCodes = {};
     elist.keyCodes.ENTER = 13;
 
+    elist.monthNames = ["января", "февраля", "марта", "апреля", "мая", "июня",
+                        "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+
     /**
      * Extends a constructor with BaseConstructor's prototype
      * @param BaseConstructor
@@ -433,6 +436,60 @@
 }());
 
 /**
+ * Created by Igor Zalutsky on 13.08.12 at 5:41
+ */
+
+(function () {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+    /**
+     * Self-updating View for displaying ObservableProperty with Date value
+     * @param property ObservableProperty
+     * @constructor
+     */
+    elist.DateView = function(property){
+        //TODO property validation in DateView()
+        var view = this;
+        this.prop = property;
+        this.parentNode = null;
+
+        this.node = document.createElement("p");
+
+        this.node.addEventListener("dblclick", function(){
+            view.emit("editRequest");
+        },false);
+        this.prop.notify(function(){
+            view.update();
+        });
+        this.update();
+    };
+    // DateView extends BaseView
+    elist.DateView.inheritFrom(elist.BaseView);
+    /**
+     * Refreshes text
+     */
+    elist.DateView.prototype.update = function(){
+        var date = this.prop.get();
+        var text = date.getDate() +
+            " " + elist.monthNames[date.getMonth()] +
+            " " + date.getFullYear();
+        this.node.innerHTML = text;
+    };
+    /**
+     * Returns value from markup
+     */
+    elist.DateView.prototype.getValue = function(){
+        return this.node.innerHTML;
+    };
+
+}());
+
+/**
  * Created by Igor Zalutsky on 13.08.12 at 4:50
  */
 
@@ -450,7 +507,7 @@
      * @param viewControlName
      * @constructor
      */
-    elist.EditableView = function(property, editControlName, viewControlName){
+    elist.EditableView = function(property, viewControlName, editControlName, inputEditType){
         //TODO params validation in EditableView()
         var view = this;
         this.prop = property;
@@ -460,7 +517,11 @@
 
         //TODO validate control names in EditableView()
         this.viewControl = new elist[viewControlName](property);
-        this.editControl = new elist[editControlName](property);
+        if (editControlName === "InputEdit") {
+            this.editControl = new elist.InputEdit(property, inputEditType);
+        } else {
+            this.editControl = new elist[editControlName](property);
+        }
 
         this.viewControl.parentNode = this.node;
         this.editControl.parentNode = this.node;
@@ -470,7 +531,19 @@
         });
         this.editControl.on("saveRequest", function(){
             //TODO maybe re-emit on saveRequest in EditableView?
-            view.prop.set(view.getValue());
+            var newValue = null;
+            if (typeof view.editControl.inputType === "string") {
+                if (view.editControl.inputType === "date"){
+                    newValue = new Date(view.getValue());
+                } else if (view.editControl.inputType === "number") {
+                    newValue = Number(view.getValue());
+                } else {
+                    newValue = view.getValue();
+                }
+            } else {
+                newValue = view.getValue();
+            }
+            view.prop.set(newValue);
             view.view();
         });
 
@@ -560,113 +633,7 @@
 }());
 
 /**
- * Created by Igor Zalutsky on 13.08.12 at 0:48
- */
-
-(function () {
-    "use strict";
-    // publishing namespace
-    if (!window.elist) {
-        window.elist = {};
-    }
-    var elist = window.elist;
-
-    elist.TextControl = function(property){
-        var control = this;
-        this.isEditing = true;
-        this.prop = property;
-        this.parentNode = null;
-        this.node = null;
-
-        this.viewNode = document.createElement("span");
-        this.editNode = document.createElement("input");
-        this.editNode.type = "text";
-
-        this.viewNode.addEventListener("click", function(){
-            control.edit();
-        }, false);
-        this.editNode.addEventListener("change", function(){
-            control.save();
-        }, false);
-
-        this.prop.notify(function(){
-            control.update();
-        });
-
-        this.view();
-    };
-
-    elist.TextControl.inheritFrom(elist.BaseView);
-
-    elist.TextControl.prototype.view = function(){
-        if (this.isEditing === true) {
-            if (this.parentNode) {
-                try {
-                    this.parentNode.removeChild(this.editNode);
-                } catch (e) {}
-                this.parentNode.appendChild(this.viewNode);
-            }
-            this.node = this.viewNode;
-            this.isEditing = false;
-            this.update();
-        }
-    };
-
-    elist.TextControl.prototype.edit = function(){
-        if (this.isEditing === false) {
-            if (this.parentNode) {
-                try {
-                    this.parentNode.removeChild(this.viewNode);
-                } catch (e) {}
-                this.parentNode.appendChild(this.editNode);
-            }
-            this.node = this.viewNode;
-            this.isEditing = true;
-            this.update();
-        }
-    };
-
-    elist.TextControl.prototype.save = function(){
-        if (this.isEditing === true){
-            this.emit("saveRequest");
-        }
-    };
-
-    elist.TextControl.prototype.getText = function(){
-        if (this.isEditing === true) {
-            return this.editNode.value;
-        } else {
-            return this.viewNode.innerHTML;
-        }
-    };
-
-    elist.TextControl.prototype.update = function(){
-        var value = this.prop.get();
-        this.viewNode.innerHTML = value;
-        this.editNode.value = value;
-    };
-
-    elist.TextControl.prototype.renderTo = function(element) {
-        //TODO param validation in renderTo()
-        var control = this;
-        element.appendChild(this.node);
-        this.parentNode = element;
-        /*
-        this.viewNode.addEventListener("click", function(){
-            control.edit();
-        }, false);
-        this.editNode.addEventListener("change", function(){
-            control.save();
-        }, false);
-
-        return this; */
-    };
-
-
-}());
-
-/**
- * Created by Igor Zalutsky on 13.08.12 at 4:37
+ * Created by Igor Zalutsky on 13.08.12 at 5:53
  */
 
 (function () {
@@ -678,18 +645,20 @@
     var elist = window.elist;
 
     /**
-     * View for editing ObservableProperty with text value
+     * View based on input for editing ObservableProperty
      * @param property ObservableProperty
      * @constructor
      */
-    elist.TextEdit = function(property){
-        //TODO property validation in TextView()
+    elist.InputEdit = function(property, inputType){
+        //TODO property validation in InputEdit()
         var view = this;
         this.prop = property;
         this.parentNode = null;
+        this.inputType = inputType;
 
+        //TODO input type validation in InputEdit()
         this.node = document.createElement("input");
-        this.node.type = "text";
+        this.node.type = inputType;
 
         this.node.addEventListener("change", function(){
             view.emit("saveRequest");
@@ -705,21 +674,20 @@
         });
         this.update();
     };
-    // TextView extends BaseView
-    elist.TextEdit.inheritFrom(elist.BaseView);
+    // InputEdit extends BaseView
+    elist.InputEdit.inheritFrom(elist.BaseView);
     /**
-     * Refreshes text
+     * Refreshes value
      */
-    elist.TextEdit.prototype.update = function(){
+    elist.InputEdit.prototype.update = function(){
         this.node.value = this.prop.get();
     };
     /**
      * Returns value from markup
      */
-    elist.TextEdit.prototype.getValue = function(){
+    elist.InputEdit.prototype.getValue = function(){
         return this.node.value;
     };
-
 }());
 
 /**
@@ -788,7 +756,7 @@
         var model = new elist.ExpenseModel(13);
         model.description.set("Description");
 
-        var view = new elist.EditableView(model.description, "TextEdit", "TextView");
+        var view = new elist.EditableView(model.date, "DateView", "InputEdit", "date");
 
 
         var div = document.createElement("div");

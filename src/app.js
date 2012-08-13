@@ -14,7 +14,7 @@
         var model = new elist.ExpenseModel(13);
         model.description.set("Description");
 
-        var view = new elist.EditableView(model.description, "TextEdit", "TextView");
+        var view = new elist.EditableView(model.date, "DateView", "InputEdit", "date");
 
 
         var div = document.createElement("div");

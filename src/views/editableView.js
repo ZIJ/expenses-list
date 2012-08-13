@@ -16,7 +16,7 @@
      * @param viewControlName
      * @constructor
      */
-    elist.EditableView = function(property, editControlName, viewControlName){
+    elist.EditableView = function(property, viewControlName, editControlName, inputEditType){
         //TODO params validation in EditableView()
         var view = this;
         this.prop = property;
@@ -26,7 +26,11 @@
 
         //TODO validate control names in EditableView()
         this.viewControl = new elist[viewControlName](property);
-        this.editControl = new elist[editControlName](property);
+        if (editControlName === "InputEdit") {
+            this.editControl = new elist.InputEdit(property, inputEditType);
+        } else {
+            this.editControl = new elist[editControlName](property);
+        }
 
         this.viewControl.parentNode = this.node;
         this.editControl.parentNode = this.node;
@@ -36,7 +40,19 @@
         });
         this.editControl.on("saveRequest", function(){
             //TODO maybe re-emit on saveRequest in EditableView?
-            view.prop.set(view.getValue());
+            var newValue = null;
+            if (typeof view.editControl.inputType === "string") {
+                if (view.editControl.inputType === "date"){
+                    newValue = new Date(view.getValue());
+                } else if (view.editControl.inputType === "number") {
+                    newValue = Number(view.getValue());
+                } else {
+                    newValue = view.getValue();
+                }
+            } else {
+                newValue = view.getValue();
+            }
+            view.prop.set(newValue);
             view.view();
         });
 

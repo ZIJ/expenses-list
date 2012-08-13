@@ -13,6 +13,9 @@
     elist.keyCodes = {};
     elist.keyCodes.ENTER = 13;
 
+    elist.monthNames = ["января", "февраля", "марта", "апреля", "мая", "июня",
+                        "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+
     /**
      * Extends a constructor with BaseConstructor's prototype
      * @param BaseConstructor
