@@ -661,6 +661,8 @@
         this.model = appModel;
         this.parentNode = null;
 
+        this.totalActiveAmount = 0;
+
         // wrapping div
         this.node = document.createElement("div");
 
@@ -709,9 +711,30 @@
             expenseView.renderTo(view.table);
         });
 
+        this.views.each(function(expenseView){
+            expenseView.activeAmount.notify(function(){
+                view.updateTotalActiveAmount();
+            });
+        });
+
+        this.updateTotalActiveAmount();
+
     };
 
     elist.AppView.inheritFrom(elist.BaseView);
+
+    elist.AppView.prototype.updateTotalActiveAmount = function(){
+        var total = 0;
+        this.views.each(function(expenseView){
+            total += expenseView.activeAmount.get();
+        });
+        this.totalActiveAmount = total;
+        this.views.each(function(expenseView){
+            var amount = expenseView.activeAmount.get();
+            expenseView.activeShare.set(amount / total);
+        });
+    };
+
 }());
 
 /**
@@ -828,32 +851,6 @@
             view.view();
         });
 
-        /*
-
-        this.view = function(){
-            if (this.isEditing) {
-                this.editControl.hide();
-                this.viewControl.show();
-                this.isEditing = false;
-            }
-        };
-
-        this.edit = function(){
-            if (!this.isEditing) {
-                this.viewControl.hide();
-                this.editControl.show();
-                this.isEditing = true;
-            }
-        };
-
-        this.getValue = function(){
-            if (this.isEditing) {
-                return this.editControl.getValue();
-            } else {
-                return this.viewControl.getValue();
-            }
-        };  */
-
         this.isEditing = true;
         this.view();
     };
@@ -907,12 +904,21 @@
 
     elist.ExpenseView = function(expenseModel){
         //TODO Param validation in ExpenseView
+        var view = this;
         var model = expenseModel;
         this.listeners = {};
         this.model = expenseModel;
         this.parentNode = null;
 
         this.activeAmount = new elist.ObservableProperty(0);
+        this.model.amount.notify(function(){
+            view.updateActiveAmount();
+        });
+        this.model.isActive.notify(function(){
+            view.updateActiveAmount();
+        });
+
+        this.activeShare = new elist.ObservableProperty(0);
 
         this.node = document.createElement("tr");
         for (var i = 0; i < 6; i+=1){
@@ -923,18 +929,23 @@
         this.dateControl = new elist.EditableView(model.date, "DateView", "InputEdit", "date");
         this.amountControl = new elist.EditableView(model.amount, "AmountView", "InputEdit", "number");
         this.activeControl = new elist.FlagView(model.isActive);
+        this.shareControl = new elist.ShareView(this.activeShare);
 
         this.descriptionControl.renderTo(this.node.children[0]);
         this.dateControl.renderTo(this.node.children[1]);
         this.amountControl.renderTo(this.node.children[2]);
-        this.activeControl.renderTo(this.node.children[3]);
+        this.activeControl.renderTo(this.node.children[4]);
+        this.shareControl.renderTo(this.node.children[3]);
 
+        this.updateActiveAmount();
     };
 
     elist.ExpenseView.inheritFrom(elist.BaseView);
 
-    elist.ExpenseView.prototype.update = function(){
-
+    elist.ExpenseView.prototype.updateActiveAmount = function(){
+        var isActive = this.model.isActive.get();
+        var amount = this.model.amount.get();
+        this.activeAmount.set(isActive ? amount : 0);
     };
 
 }());
@@ -1041,6 +1052,56 @@
     elist.InputEdit.prototype.getValue = function(){
         return this.node.value;
     };
+}());
+
+/**
+ * Created by Igor Zalutsky on 13.08.12 at 12:04
+ */
+
+(function () {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+    elist.ShareView = function(property){
+        //TODO property validation in ShareView()
+        var view = this;
+        this.listeners = {};
+        this.prop = property;
+        this.parentNode = null;
+
+        this.node = document.createElement("p");
+
+        this.prop.notify(function(){
+            view.update();
+        });
+
+        this.update();
+    };
+    // ShareView extends BaseView
+    elist.ShareView.inheritFrom(elist.BaseView);
+    /**
+     * Refreshes text
+     */
+    elist.ShareView.prototype.update = function(){
+        var share = this.prop.get();
+        if (share <= 0) {
+            this.node.innerHTML = "--";
+        }  else {
+            this.node.innerHTML = Math.round(share * 100) + " %";
+        }
+    };
+    /**
+     * Returns value from markup
+     */
+    elist.ShareView.prototype.getValue = function(){
+        return this.node.innerHTML;
+    };
+
+
 }());
 
 /**

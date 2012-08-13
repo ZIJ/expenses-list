@@ -18,6 +18,8 @@
         this.model = appModel;
         this.parentNode = null;
 
+        this.totalActiveAmount = 0;
+
         // wrapping div
         this.node = document.createElement("div");
 
@@ -66,7 +68,28 @@
             expenseView.renderTo(view.table);
         });
 
+        this.views.each(function(expenseView){
+            expenseView.activeAmount.notify(function(){
+                view.updateTotalActiveAmount();
+            });
+        });
+
+        this.updateTotalActiveAmount();
+
     };
 
     elist.AppView.inheritFrom(elist.BaseView);
+
+    elist.AppView.prototype.updateTotalActiveAmount = function(){
+        var total = 0;
+        this.views.each(function(expenseView){
+            total += expenseView.activeAmount.get();
+        });
+        this.totalActiveAmount = total;
+        this.views.each(function(expenseView){
+            var amount = expenseView.activeAmount.get();
+            expenseView.activeShare.set(amount / total);
+        });
+    };
+
 }());
