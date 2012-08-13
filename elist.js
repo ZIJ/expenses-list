@@ -37,6 +37,25 @@
         return element;
     };
     /**
+     * For replacing dom elements. Use like this: replace(element).with(substitute);
+     * @param element
+     */
+    elist.replace = function(element) {
+        //TODO Fix! replace() not working properly! Dom error 8
+        var replacer = {};
+        replacer.by = function(substitute){
+            var parent = element.parentNode;
+            var shouldReplace = parent &&
+                typeof parent === "object" &&
+                typeof parent.replaceChild === "function" &&
+                element.parentNode === parent;
+            if (shouldReplace) {
+                parent.replaceChild(substitute, element);
+            }
+        };
+        return replacer;
+    };
+    /**
      * Selects DOM element by it's ID
      * @param id
      * @return
@@ -173,6 +192,10 @@
         window.elist = {};
     }
     var elist = window.elist;
+
+    elist.keyCodes = {};
+    elist.keyCodes.ENTER = 13;
+
     /**
      * Extends a constructor with BaseConstructor's prototype
      * @param BaseConstructor
@@ -410,8 +433,10 @@
     elist.ExpenseView.inheritFrom(elist.BaseView);
 
     elist.ExpenseView.prototype.viewDescription = function(){
-        var model = this.model;
-        var td = this.node.children[0];
+        var view = this;
+        var model = view.model;
+        var td = view.node.children[0];
+        //TODO Fix memory leak - update() remains subscribed after view refreshing
         var update = function(){
             var text = document.createTextNode(model.description.get());
             elist.empty(td).appendChild(text);
@@ -419,6 +444,112 @@
         model.description.notify(update);
         update();
     };
+
+    elist.ExpenseView.prototype.editDescription = function(){
+        var model = this.model;
+        var td = this.node.children[0];
+        var input = document.createElement("input");
+        input.type = "text";
+    };
+
+}());
+
+/**
+ * Created by Igor Zalutsky on 13.08.12 at 0:48
+ */
+
+(function () {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+    elist.TextControl = function(property){
+        var control = this;
+        this.isEditing = true;
+        this.prop = property;
+        this.parentNode = null;
+        this.node = null;
+
+        this.viewNode = document.createElement("span");
+        this.editNode = document.createElement("input");
+        this.editNode.type = "text";
+
+        this.prop.notify(function(){
+            control.update();
+        });
+
+        this.view();
+    };
+
+    elist.TextControl.inheritFrom(elist.BaseView);
+
+    elist.TextControl.prototype.view = function(){
+        if (this.isEditing === true) {
+            if (this.parentNode) {
+                try {
+                    this.parentNode.removeChild(this.editNode);
+                } catch (e) {}
+                this.parentNode.appendChild(this.viewNode);
+            }
+            this.node = this.viewNode;
+            this.isEditing = false;
+            this.update();
+        }
+    };
+
+    elist.TextControl.prototype.edit = function(){
+        if (this.isEditing === false) {
+            if (this.parentNode) {
+                try {
+                    this.parentNode.removeChild(this.viewNode);
+                } catch (e) {}
+                this.parentNode.appendChild(this.editNode);
+            }
+            this.node = this.viewNode;
+            this.isEditing = true;
+            this.update();
+        }
+    };
+
+    elist.TextControl.prototype.save = function(){
+        if (this.isEditing === true){
+            this.emit("saveRequest");
+        }
+    };
+
+    elist.TextControl.prototype.getText = function(){
+        if (this.isEditing === true) {
+            return this.editNode.value;
+        } else {
+            return this.viewNode.innerHTML;
+        }
+    };
+
+    elist.TextControl.prototype.update = function(){
+        var value = this.prop.get();
+        this.viewNode.innerHTML = value;
+        this.editNode.value = value;
+    };
+
+    elist.TextControl.prototype.renderTo = function(element) {
+        //TODO param validation in renderTo()
+        var control = this;
+        element.appendChild(this.node);
+        this.parentNode = element;
+
+        this.viewNode.addEventListener("click", function(){
+            control.edit();
+        }, false);
+        this.editNode.addEventListener("change", function(){
+            control.save();
+        }, false);
+
+        return this;
+    };
+
 
 }());
 
@@ -463,12 +594,17 @@
     elist.ready(function(){
         var model = new elist.ExpenseModel(13);
         model.description.set("Description");
-        var view = new elist.ExpenseView(model);
+        //var view = new elist.ExpenseView(model);
+        var view = new elist.TextControl(model.description);
+        view.on("saveRequest", function(){
+            model.description.set(view.getText());
+            view.view();
+        });
 
-        var table = document.createElement("table");
-        view.renderTo(table);
+        var div = document.createElement("div");
+        view.renderTo(div);
 
-        document.body.appendChild(table);
+        document.body.appendChild(div);
 
         setTimeout(function(){
             model.description.set("Updated");

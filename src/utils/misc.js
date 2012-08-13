@@ -9,6 +9,10 @@
         window.elist = {};
     }
     var elist = window.elist;
+
+    elist.keyCodes = {};
+    elist.keyCodes.ENTER = 13;
+
     /**
      * Extends a constructor with BaseConstructor's prototype
      * @param BaseConstructor

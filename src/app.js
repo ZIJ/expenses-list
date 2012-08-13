@@ -13,12 +13,17 @@
     elist.ready(function(){
         var model = new elist.ExpenseModel(13);
         model.description.set("Description");
-        var view = new elist.ExpenseView(model);
+        //var view = new elist.ExpenseView(model);
+        var view = new elist.TextControl(model.description);
+        view.on("saveRequest", function(){
+            model.description.set(view.getText());
+            view.view();
+        });
 
-        var table = document.createElement("table");
-        view.renderTo(table);
+        var div = document.createElement("div");
+        view.renderTo(div);
 
-        document.body.appendChild(table);
+        document.body.appendChild(div);
 
         setTimeout(function(){
             model.description.set("Updated");

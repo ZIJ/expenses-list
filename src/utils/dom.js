@@ -37,6 +37,25 @@
         return element;
     };
     /**
+     * For replacing dom elements. Use like this: replace(element).with(substitute);
+     * @param element
+     */
+    elist.replace = function(element) {
+        //TODO Fix! replace() not working properly! Dom error 8
+        var replacer = {};
+        replacer.by = function(substitute){
+            var parent = element.parentNode;
+            var shouldReplace = parent &&
+                typeof parent === "object" &&
+                typeof parent.replaceChild === "function" &&
+                element.parentNode === parent;
+            if (shouldReplace) {
+                parent.replaceChild(substitute, element);
+            }
+        };
+        return replacer;
+    };
+    /**
      * Selects DOM element by it's ID
      * @param id
      * @return
