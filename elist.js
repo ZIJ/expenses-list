@@ -828,6 +828,8 @@
             view.view();
         });
 
+        /*
+
         this.view = function(){
             if (this.isEditing) {
                 this.editControl.hide();
@@ -850,7 +852,7 @@
             } else {
                 return this.viewControl.getValue();
             }
-        };
+        };  */
 
         this.isEditing = true;
         this.view();
@@ -860,34 +862,34 @@
 
     /**
      * Toggles view mode
-     */                              /*
+     */
     elist.EditableView.prototype.view = function(){
         if (this.isEditing) {
             this.editControl.hide();
             this.viewControl.show();
             this.isEditing = false;
         }
-    };                             */
+    };
     /**
      * Toggles edit mode
-     */                             /*
+     */
     elist.EditableView.prototype.edit = function(){
         if (!this.isEditing) {
             this.viewControl.hide();
             this.editControl.show();
             this.isEditing = true;
         }
-    };                              */
+    };
     /**
      * Returns value from markup
-     */                             /*
+     */
     elist.EditableView.prototype.getValue = function(){
         if (this.isEditing) {
             return this.editControl.getValue();
         } else {
             return this.viewControl.getValue();
         }
-    };                             */
+    };
 
 }());
 
@@ -910,6 +912,8 @@
         this.model = expenseModel;
         this.parentNode = null;
 
+        this.activeAmount = new elist.ObservableProperty(0);
+
         this.node = document.createElement("tr");
         for (var i = 0; i < 6; i+=1){
             this.node.appendChild(document.createElement("td"));
@@ -928,6 +932,10 @@
     };
 
     elist.ExpenseView.inheritFrom(elist.BaseView);
+
+    elist.ExpenseView.prototype.update = function(){
+
+    };
 
 }());
 

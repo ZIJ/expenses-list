@@ -17,6 +17,8 @@
         this.model = expenseModel;
         this.parentNode = null;
 
+        this.activeAmount = new elist.ObservableProperty(0);
+
         this.node = document.createElement("tr");
         for (var i = 0; i < 6; i+=1){
             this.node.appendChild(document.createElement("td"));
@@ -35,5 +37,9 @@
     };
 
     elist.ExpenseView.inheritFrom(elist.BaseView);
+
+    elist.ExpenseView.prototype.update = function(){
+
+    };
 
 }());
