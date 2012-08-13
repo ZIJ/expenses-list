@@ -10,7 +10,7 @@
     }
     var elist = window.elist;
     /**
-     * View for ObservableProperty with text value
+     * Self-updating View for displaying ObservableProperty with text value
      * @param property ObservableProperty
      * @constructor
      */
@@ -19,7 +19,9 @@
         var view = this;
         this.prop = property;
         this.parentNode = null;
+
         this.node = document.createElement("p");
+
         this.node.addEventListener("dblclick", function(){
             view.emit("editRequest");
         },false);
@@ -30,7 +32,9 @@
     };
     // TextView extends BaseView
     elist.TextView.inheritFrom(elist.BaseView);
-
+    /**
+     * Refreshes text
+     */
     elist.TextView.prototype.update = function(){
         this.node.innerHTML = this.prop.get();
     };
