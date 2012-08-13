@@ -13,8 +13,9 @@
     elist.ready(function(){
         var model = new elist.ExpenseModel(13);
         model.description.set("Description");
+        model.amount.set(13);
 
-        var view = new elist.EditableView(model.date, "DateView", "InputEdit", "date");
+        var view = new elist.EditableView(model.amount, "AmountView", "InputEdit", "number");
 
 
         var div = document.createElement("div");

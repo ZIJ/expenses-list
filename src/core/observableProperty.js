@@ -11,9 +11,7 @@
     var elist = window.elist;
     /**
      * Property that notifies listeners when it's value changes through set()
-     * @param options
-     *   value - initial property value
-     *   getter - function
+     * @param initialValue
      * @constructor
      */
     elist.ObservableProperty = function(initialValue) {

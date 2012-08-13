@@ -117,6 +117,54 @@
 }());
 
 /**
+ * Created by Igor Zalutsky on 10.08.12 at 1:15
+ */
+
+(function() {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+    elist.keyCodes = {};
+    elist.keyCodes.ENTER = 13;
+
+    elist.monthNames = ["января", "февраля", "марта", "апреля", "мая", "июня",
+                        "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+
+    /**
+     * Extends a constructor with BaseConstructor's prototype
+     * @param BaseConstructor
+     */
+    Function.prototype.inheritFrom = function(BaseConstructor){
+        var sampleInstance = new BaseConstructor();
+        this.prototype = sampleInstance;
+    };
+    /**
+     * Throw an error with custom message
+     * @param errorMessage Optional, "Something went wrong" by default
+     */
+    elist.report = function(errorMessage) {
+        throw new Error(errorMessage ? errorMessage : "Something went wrong");
+    };
+
+    /**
+     * Checks condition and reports if check fails
+     * @param condition
+     * @param errorMessage Optional, "Assertion failed" by default
+     */
+    elist.assert = function(condition, errorMessage) {
+        if (!condition) {
+            elist.report(errorMessage ? errorMessage : "Assertion failed");
+        }
+    };
+
+
+
+}());
+/**
  * Created by Igor Zalutsky on 11.08.12 at 21:36
  */
 
@@ -182,54 +230,6 @@
     };
 }());
 /**
- * Created by Igor Zalutsky on 10.08.12 at 1:15
- */
-
-(function() {
-    "use strict";
-    // publishing namespace
-    if (!window.elist) {
-        window.elist = {};
-    }
-    var elist = window.elist;
-
-    elist.keyCodes = {};
-    elist.keyCodes.ENTER = 13;
-
-    elist.monthNames = ["января", "февраля", "марта", "апреля", "мая", "июня",
-                        "июля", "августа", "сентября", "октября", "ноября", "декабря"];
-
-    /**
-     * Extends a constructor with BaseConstructor's prototype
-     * @param BaseConstructor
-     */
-    Function.prototype.inheritFrom = function(BaseConstructor){
-        var sampleInstance = new BaseConstructor();
-        this.prototype = sampleInstance;
-    };
-    /**
-     * Throw an error with custom message
-     * @param errorMessage Optional, "Something went wrong" by default
-     */
-    elist.report = function(errorMessage) {
-        throw new Error(errorMessage ? errorMessage : "Something went wrong");
-    };
-
-    /**
-     * Checks condition and reports if check fails
-     * @param condition
-     * @param errorMessage Optional, "Assertion failed" by default
-     */
-    elist.assert = function(condition, errorMessage) {
-        if (!condition) {
-            elist.report(errorMessage ? errorMessage : "Assertion failed");
-        }
-    };
-
-
-
-}());
-/**
  * Created Created by Igor Zalutsky on 12.08.12 at 0:09
  */
 
@@ -242,9 +242,7 @@
     var elist = window.elist;
     /**
      * Property that notifies listeners when it's value changes through set()
-     * @param options
-     *   value - initial property value
-     *   getter - function
+     * @param initialValue
      * @constructor
      */
     elist.ObservableProperty = function(initialValue) {
@@ -352,38 +350,6 @@
 }());
 
 /**
- * Created by Igor Zalutsky on 10.08.12 at 6:01
- */
-
-(function() {
-    "use strict";
-    // publishing namespace
-    if (!window.elist) {
-        window.elist = {};
-    }
-    var elist = window.elist;
-
-    /**
-     * Model of Expense entity with observable properties
-     * @param properties Object with initial property values (id required) or id
-     * @constructor
-     */
-    elist.ExpenseModel = function(id, properties) {
-        this.id = this.newId(id);
-        this.description = this.newProp("");
-        this.amount = this.newProp(0);
-        this.date = this.newProp(new Date());
-        this.isActive = this.newProp(true);
-        if (properties !== undefined) {
-            this.assign(properties);
-        }
-    };
-
-    // ExpenseModel extends BaseModel
-    elist.ExpenseModel.inheritFrom(elist.BaseModel);
-
-}());
-/**
  * Created by Igor Zalutsky on 12.08.12 at 18:57
  */
 
@@ -431,6 +397,88 @@
                 this.parentNode.removeChild(this.node);
             } catch (e) {}
         }
+    };
+
+}());
+
+/**
+ * Created by Igor Zalutsky on 10.08.12 at 6:01
+ */
+
+(function() {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+    /**
+     * Model of Expense entity with observable properties
+     * @param properties Object with initial property values (id required) or id
+     * @constructor
+     */
+    elist.ExpenseModel = function(id, properties) {
+        this.id = this.newId(id);
+        this.description = this.newProp("");
+        this.amount = this.newProp(0);
+        this.date = this.newProp(new Date());
+        this.isActive = this.newProp(true);
+        if (properties !== undefined) {
+            this.assign(properties);
+        }
+    };
+
+    // ExpenseModel extends BaseModel
+    elist.ExpenseModel.inheritFrom(elist.BaseModel);
+
+}());
+/**
+ * Created by Igor Zalutsky on 13.08.12 at 6:37
+ */
+
+(function () {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+    /**
+     * Self-updating View for displaying ObservableProperty with numeric value as currency
+     * @param property ObservableProperty
+     * @constructor
+     */
+    elist.AmountView = function(property){
+        //TODO property validation in AmountView()
+        var view = this;
+        this.prop = property;
+        this.parentNode = null;
+
+        this.node = document.createElement("p");
+
+        this.node.addEventListener("dblclick", function(){
+            view.emit("editRequest");
+        },false);
+        this.prop.notify(function(){
+            view.update();
+        });
+        this.update();
+    };
+    // AmountView extends BaseView
+    elist.AmountView.inheritFrom(elist.BaseView);
+    /**
+     * Refreshes text
+     */
+    elist.AmountView.prototype.update = function(){
+        this.node.innerHTML = "$" + this.prop.get();
+    };
+    /**
+     * Returns value from markup
+     */
+    elist.AmountView.prototype.getValue = function(){
+        return this.node.innerHTML;
     };
 
 }());
@@ -755,8 +803,9 @@
     elist.ready(function(){
         var model = new elist.ExpenseModel(13);
         model.description.set("Description");
+        model.amount.set(13);
 
-        var view = new elist.EditableView(model.date, "DateView", "InputEdit", "date");
+        var view = new elist.EditableView(model.amount, "AmountView", "InputEdit", "number");
 
 
         var div = document.createElement("div");
