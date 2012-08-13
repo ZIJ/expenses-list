@@ -18,7 +18,43 @@
         this.model = appModel;
         this.parentNode = null;
 
-        this.node = document.createElement("table");
+        // wrapping div
+        this.node = document.createElement("div");
+
+        // controls bar
+        this.bar = document.createElement("div");
+        this.node.appendChild(this.bar);
+
+        // create button
+        this.createButton = document.createElement("button");
+        this.createButton.type = "button";
+        this.createButton.innerHTML = "Создать";
+        this.bar.appendChild(this.createButton);
+
+        // search label
+        this.searchLabel = document.createElement("label");
+        this.searchLabel.innerHTML = "Поиск";
+        this.bar.appendChild(this.searchLabel);
+
+        // search input
+        this.searchInput = document.createElement("input");
+        this.searchInput.type = "text";
+        this.searchLabel.appendChild(this.searchInput);
+
+        // table
+        this.table = document.createElement("table");
+        this.node.appendChild(this.table);
+
+        // table headings
+        this.headings = document.createElement("tr");
+        this.table.appendChild(this.headings);
+        var titles = ["Что", "Когда", "Сколько", "Доля", "Считать", "Удалить"];
+        for (var i = 0; i < titles.length; i+=1){
+            var th = document.createElement("th");
+            th.innerHTML = titles[i];
+            this.headings.appendChild(th);
+        }
+
 
         this.views = new elist.ObservableCollection();
         model.expenses.each(function(expenseModel){
@@ -27,7 +63,7 @@
         });
 
         this.views.each(function(expenseView){
-            expenseView.renderTo(view.node);
+            expenseView.renderTo(view.table);
         });
 
     };

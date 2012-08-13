@@ -25,10 +25,12 @@
         this.descriptionControl = new elist.EditableView(model.description, "TextView", "InputEdit", "text");
         this.dateControl = new elist.EditableView(model.date, "DateView", "InputEdit", "date");
         this.amountControl = new elist.EditableView(model.amount, "AmountView", "InputEdit", "number");
+        this.activeControl = new elist.FlagView(model.isActive);
 
         this.descriptionControl.renderTo(this.node.children[0]);
         this.dateControl.renderTo(this.node.children[1]);
         this.amountControl.renderTo(this.node.children[2]);
+        this.activeControl.renderTo(this.node.children[3]);
 
     };
 

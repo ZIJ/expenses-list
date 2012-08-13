@@ -661,7 +661,43 @@
         this.model = appModel;
         this.parentNode = null;
 
-        this.node = document.createElement("table");
+        // wrapping div
+        this.node = document.createElement("div");
+
+        // controls bar
+        this.bar = document.createElement("div");
+        this.node.appendChild(this.bar);
+
+        // create button
+        this.createButton = document.createElement("button");
+        this.createButton.type = "button";
+        this.createButton.innerHTML = "Создать";
+        this.bar.appendChild(this.createButton);
+
+        // search label
+        this.searchLabel = document.createElement("label");
+        this.searchLabel.innerHTML = "Поиск";
+        this.bar.appendChild(this.searchLabel);
+
+        // search input
+        this.searchInput = document.createElement("input");
+        this.searchInput.type = "text";
+        this.searchLabel.appendChild(this.searchInput);
+
+        // table
+        this.table = document.createElement("table");
+        this.node.appendChild(this.table);
+
+        // table headings
+        this.headings = document.createElement("tr");
+        this.table.appendChild(this.headings);
+        var titles = ["Что", "Когда", "Сколько", "Доля", "Считать", "Удалить"];
+        for (var i = 0; i < titles.length; i+=1){
+            var th = document.createElement("th");
+            th.innerHTML = titles[i];
+            this.headings.appendChild(th);
+        }
+
 
         this.views = new elist.ObservableCollection();
         model.expenses.each(function(expenseModel){
@@ -670,7 +706,7 @@
         });
 
         this.views.each(function(expenseView){
-            expenseView.renderTo(view.node);
+            expenseView.renderTo(view.table);
         });
 
     };
@@ -882,14 +918,61 @@
         this.descriptionControl = new elist.EditableView(model.description, "TextView", "InputEdit", "text");
         this.dateControl = new elist.EditableView(model.date, "DateView", "InputEdit", "date");
         this.amountControl = new elist.EditableView(model.amount, "AmountView", "InputEdit", "number");
+        this.activeControl = new elist.FlagView(model.isActive);
 
         this.descriptionControl.renderTo(this.node.children[0]);
         this.dateControl.renderTo(this.node.children[1]);
         this.amountControl.renderTo(this.node.children[2]);
+        this.activeControl.renderTo(this.node.children[3]);
 
     };
 
     elist.ExpenseView.inheritFrom(elist.BaseView);
+
+}());
+
+/**
+ * Created by Igor Zalutsky on 13.08.12 at 11:09
+ */
+
+(function () {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+    elist.FlagView = function(property){
+        //TODO property validation in FlagView()
+        var view = this;
+        this.listeners = {};
+        this.prop = property;
+        this.parentNode = null;
+
+        this.node = document.createElement("input");
+        this.node.type = "checkbox";
+
+        this.node.addEventListener("change", function(){
+            view.prop.set(view.node.checked);
+        },false);
+
+        this.update();
+    };
+    // FlagView extends BaseView
+    elist.FlagView.inheritFrom(elist.BaseView);
+    /**
+     * Refreshes value
+     */
+    elist.FlagView.prototype.update = function(){
+        this.node.checked = this.prop.get();
+    };
+    /**
+     * Returns value from markup
+     */
+    elist.FlagView.prototype.getValue = function(){
+        return this.node.checked;
+    };
 
 }());
 
