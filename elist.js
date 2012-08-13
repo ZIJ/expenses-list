@@ -320,6 +320,10 @@
         return (this.items.indexOf(item) >= 0);
     };
 
+    elist.ObservableCollection.prototype.count = function(){
+        return this.items.length;
+    };
+
     elist.ObservableCollection.prototype.add = function(item){
         if (!this.has(item)) {
             this.items.push(item);
@@ -361,6 +365,15 @@
             }
             return reverse ? -result : result;
         });
+    };
+    /**
+     * Calls func(item) for each item
+     * @param func Function, should accept item
+     */
+    elist.ObservableCollection.prototype.each = function(func) {
+        for (var i = 0; i < this.items.length; i+=1) {
+            func(this.items[i]);
+        }
     };
 
     //TODO Refactor notify() and ignore() shortcuts in Observables
@@ -626,6 +639,43 @@
         return this.node.innerHTML;
     };
 
+}());
+
+/**
+ * Created by Igor Zalutsky on 13.08.12 at 9:44
+ */
+
+(function () {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+    elist.AppView = function(appModel){
+        //TODO Param validation in ExpenseView
+        var model = appModel;
+        var view = this;
+        this.listeners = {};
+        this.model = appModel;
+        this.parentNode = null;
+
+        this.node = document.createElement("table");
+
+        this.views = new elist.ObservableCollection();
+        model.expenses.each(function(expenseModel){
+            var expenseView = new elist.ExpenseView(expenseModel);
+            view.views.add(expenseView);
+        });
+
+        this.views.each(function(expenseView){
+            expenseView.renderTo(view.node);
+        });
+
+    };
+
+    elist.AppView.inheritFrom(elist.BaseView);
 }());
 
 /**
@@ -982,13 +1032,18 @@
             id: 3,
             props: {
                 description: "Хот-дог",
-                amount: 3
+                amount: 2
             }
         }
     ];
 
     elist.ready(function(){
 
+        var model = new elist.AppModel(elist.descriptors);
+
+        var view = new elist.AppView(model);
+
+        view.renderTo(document.body);
 
         /*
         var model = new elist.ExpenseModel(13);

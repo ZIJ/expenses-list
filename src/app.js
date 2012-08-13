@@ -27,13 +27,18 @@
             id: 3,
             props: {
                 description: "Хот-дог",
-                amount: 3
+                amount: 2
             }
         }
     ];
 
     elist.ready(function(){
 
+        var model = new elist.AppModel(elist.descriptors);
+
+        var view = new elist.AppView(model);
+
+        view.renderTo(document.body);
 
         /*
         var model = new elist.ExpenseModel(13);

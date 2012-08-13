@@ -31,6 +31,10 @@
         return (this.items.indexOf(item) >= 0);
     };
 
+    elist.ObservableCollection.prototype.count = function(){
+        return this.items.length;
+    };
+
     elist.ObservableCollection.prototype.add = function(item){
         if (!this.has(item)) {
             this.items.push(item);
@@ -72,6 +76,15 @@
             }
             return reverse ? -result : result;
         });
+    };
+    /**
+     * Calls func(item) for each item
+     * @param func Function, should accept item
+     */
+    elist.ObservableCollection.prototype.each = function(func) {
+        for (var i = 0; i < this.items.length; i+=1) {
+            func(this.items[i]);
+        }
     };
 
     //TODO Refactor notify() and ignore() shortcuts in Observables

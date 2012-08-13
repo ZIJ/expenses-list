@@ -78,6 +78,20 @@
 
     });
 
+    test("ObservableCollection.each", function(){
+        expect(4);
+        var coll = new elist.ObservableCollection();
+        coll.add(1);
+        coll.add(2);
+        coll.add(3);
+        var sum = 0;
+        coll.each(function(item){
+            ok(true, "Func called");
+            sum += item;
+        });
+        ok(sum === 6);
+    });
+
 }());
 
 
