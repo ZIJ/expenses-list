@@ -568,6 +568,11 @@
         return expense;
     };
 
+    elist.AppModel.prototype.deleteModel = function(expenseModel){
+        //TODO Clear listeners for preventing memory leaks when deleting models
+        this.expenses.remove(expenseModel);
+    };
+
 }());
 
 /**
@@ -730,6 +735,9 @@
             expenseView.activeAmount.notify(function(){
                 view.updateTotalActiveAmount();
             });
+            expenseView.on("deleteRequest", function(){
+                view.deleteExpense(expenseView);
+            });
         });
 
         this.updateTotalActiveAmount();
@@ -759,7 +767,17 @@
         view.activeAmount.notify(function(){
             appView.updateTotalActiveAmount();
         });
+        view.on("deleteRequest", function(){
+            appView.deleteExpense(view);
+        });
         view.editAll();
+    };
+
+    elist.AppView.prototype.deleteExpense = function(expenseView){
+        //TODO Clear listeners for preventing memory leaks when deleting models
+        expenseView.hide();
+        this.views.remove(expenseView);
+        this.model.removeModel(expenseView.model);
     };
 
 }());
@@ -963,6 +981,14 @@
         this.amountControl.renderTo(this.node.children[2]);
         this.activeControl.renderTo(this.node.children[4]);
         this.shareControl.renderTo(this.node.children[3]);
+
+        this.deleteButton = document.createElement("button");
+        this.deleteButton.type = "button";
+        this.deleteButton.innerHTML = "Удалить";
+        this.deleteButton.addEventListener("click", function(){
+            view.emit("deleteRequest");
+        }, false);
+        this.node.children[5].appendChild(this.deleteButton);
 
         this.updateActiveAmount();
     };

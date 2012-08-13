@@ -45,6 +45,14 @@
         this.activeControl.renderTo(this.node.children[4]);
         this.shareControl.renderTo(this.node.children[3]);
 
+        this.deleteButton = document.createElement("button");
+        this.deleteButton.type = "button";
+        this.deleteButton.innerHTML = "Удалить";
+        this.deleteButton.addEventListener("click", function(){
+            view.emit("deleteRequest");
+        }, false);
+        this.node.children[5].appendChild(this.deleteButton);
+
         this.updateActiveAmount();
     };
 

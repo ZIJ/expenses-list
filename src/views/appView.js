@@ -75,6 +75,9 @@
             expenseView.activeAmount.notify(function(){
                 view.updateTotalActiveAmount();
             });
+            expenseView.on("deleteRequest", function(){
+                view.deleteExpense(expenseView);
+            });
         });
 
         this.updateTotalActiveAmount();
@@ -104,7 +107,17 @@
         view.activeAmount.notify(function(){
             appView.updateTotalActiveAmount();
         });
+        view.on("deleteRequest", function(){
+            appView.deleteExpense(view);
+        });
         view.editAll();
+    };
+
+    elist.AppView.prototype.deleteExpense = function(expenseView){
+        //TODO Clear listeners for preventing memory leaks when deleting views
+        expenseView.hide();
+        this.views.remove(expenseView);
+        this.model.removeModel(expenseView.model);
     };
 
 }());
