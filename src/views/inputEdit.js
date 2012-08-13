@@ -1,5 +1,5 @@
 /**
- * Created by Igor Zalutsky on 13.08.12 at 4:37
+ * Created by Igor Zalutsky on 13.08.12 at 5:53
  */
 
 (function () {
@@ -11,18 +11,19 @@
     var elist = window.elist;
 
     /**
-     * View for editing ObservableProperty with text value
+     * View based on input for editing ObservableProperty
      * @param property ObservableProperty
      * @constructor
      */
-    elist.TextEdit = function(property){
-        //TODO property validation in TextView()
+    elist.InputEdit = function(property, inputType){
+        //TODO property validation in InputEdit()
         var view = this;
         this.prop = property;
         this.parentNode = null;
 
+        //TODO input type validation in InputEdit()
         this.node = document.createElement("input");
-        this.node.type = "text";
+        this.node.type = inputType;
 
         this.node.addEventListener("change", function(){
             view.emit("saveRequest");
@@ -38,19 +39,18 @@
         });
         this.update();
     };
-    // TextView extends BaseView
-    elist.TextEdit.inheritFrom(elist.BaseView);
+    // InputEdit extends BaseView
+    elist.InputEdit.inheritFrom(elist.BaseView);
     /**
-     * Refreshes text
+     * Refreshes value
      */
-    elist.TextEdit.prototype.update = function(){
+    elist.InputEdit.prototype.update = function(){
         this.node.value = this.prop.get();
     };
     /**
      * Returns value from markup
      */
-    elist.TextEdit.prototype.getValue = function(){
+    elist.InputEdit.prototype.getValue = function(){
         return this.node.value;
     };
-
 }());
