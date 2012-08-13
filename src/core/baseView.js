@@ -11,7 +11,9 @@
     var elist = window.elist;
 
 
-    elist.BaseView = function() { };
+    elist.BaseView = function() {
+        this.listeners = {};
+    };
 
     // BaseView extends EventEmitter
     elist.BaseView.inheritFrom(elist.EventEmitter);

@@ -18,6 +18,7 @@
     elist.DateView = function(property){
         //TODO property validation in DateView()
         var view = this;
+        this.listeners = {};
         this.prop = property;
         this.parentNode = null;
 

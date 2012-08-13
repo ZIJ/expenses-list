@@ -16,6 +16,7 @@
      */
     elist.ObservableProperty = function(initialValue) {
         this.value = initialValue;
+        this.listeners = {};
     };
     /**
      * ObservableProperty extends EventEmitter

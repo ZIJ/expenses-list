@@ -19,6 +19,7 @@
     elist.EditableView = function(property, viewControlName, editControlName, inputEditType){
         //TODO params validation in EditableView()
         var view = this;
+        this.listeners = {};
         this.prop = property;
         this.parentNode = null;
 
@@ -56,40 +57,65 @@
             view.view();
         });
 
+        this.view = function(){
+            if (this.isEditing) {
+                this.editControl.hide();
+                this.viewControl.show();
+                this.isEditing = false;
+            }
+        };
+
+        this.edit = function(){
+            if (!this.isEditing) {
+                this.viewControl.hide();
+                this.editControl.show();
+                this.isEditing = true;
+            }
+        };
+
+        this.getValue = function(){
+            if (this.isEditing) {
+                return this.editControl.getValue();
+            } else {
+                return this.viewControl.getValue();
+            }
+        };
+
         this.isEditing = true;
         this.view();
     };
     // EditableView extends BaseView
     elist.EditableView.inheritFrom(elist.BaseView);
+
     /**
      * Toggles view mode
-     */
+     */                              /*
     elist.EditableView.prototype.view = function(){
         if (this.isEditing) {
             this.editControl.hide();
             this.viewControl.show();
             this.isEditing = false;
         }
-    };
+    };                             */
     /**
      * Toggles edit mode
-     */
+     */                             /*
     elist.EditableView.prototype.edit = function(){
         if (!this.isEditing) {
             this.viewControl.hide();
             this.editControl.show();
             this.isEditing = true;
         }
-    };
+    };                              */
     /**
      * Returns value from markup
-     */
+     */                             /*
     elist.EditableView.prototype.getValue = function(){
         if (this.isEditing) {
             return this.editControl.getValue();
         } else {
             return this.viewControl.getValue();
         }
-    };
+    };                             */
 
 }());

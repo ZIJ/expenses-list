@@ -18,6 +18,7 @@
     elist.InputEdit = function(property, inputType){
         //TODO property validation in InputEdit()
         var view = this;
+        this.listeners = {};
         this.prop = property;
         this.parentNode = null;
         this.inputType = inputType;

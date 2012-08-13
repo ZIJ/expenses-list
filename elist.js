@@ -247,6 +247,7 @@
      */
     elist.ObservableProperty = function(initialValue) {
         this.value = initialValue;
+        this.listeners = {};
     };
     /**
      * ObservableProperty extends EventEmitter
@@ -362,7 +363,9 @@
     var elist = window.elist;
 
 
-    elist.BaseView = function() { };
+    elist.BaseView = function() {
+        this.listeners = {};
+    };
 
     // BaseView extends EventEmitter
     elist.BaseView.inheritFrom(elist.EventEmitter);
@@ -453,6 +456,7 @@
     elist.AmountView = function(property){
         //TODO property validation in AmountView()
         var view = this;
+        this.listeners = {};
         this.prop = property;
         this.parentNode = null;
 
@@ -503,6 +507,7 @@
     elist.DateView = function(property){
         //TODO property validation in DateView()
         var view = this;
+        this.listeners = {};
         this.prop = property;
         this.parentNode = null;
 
@@ -558,6 +563,7 @@
     elist.EditableView = function(property, viewControlName, editControlName, inputEditType){
         //TODO params validation in EditableView()
         var view = this;
+        this.listeners = {};
         this.prop = property;
         this.parentNode = null;
 
@@ -595,41 +601,66 @@
             view.view();
         });
 
+        this.view = function(){
+            if (this.isEditing) {
+                this.editControl.hide();
+                this.viewControl.show();
+                this.isEditing = false;
+            }
+        };
+
+        this.edit = function(){
+            if (!this.isEditing) {
+                this.viewControl.hide();
+                this.editControl.show();
+                this.isEditing = true;
+            }
+        };
+
+        this.getValue = function(){
+            if (this.isEditing) {
+                return this.editControl.getValue();
+            } else {
+                return this.viewControl.getValue();
+            }
+        };
+
         this.isEditing = true;
         this.view();
     };
     // EditableView extends BaseView
     elist.EditableView.inheritFrom(elist.BaseView);
+
     /**
      * Toggles view mode
-     */
+     */                              /*
     elist.EditableView.prototype.view = function(){
         if (this.isEditing) {
             this.editControl.hide();
             this.viewControl.show();
             this.isEditing = false;
         }
-    };
+    };                             */
     /**
      * Toggles edit mode
-     */
+     */                             /*
     elist.EditableView.prototype.edit = function(){
         if (!this.isEditing) {
             this.viewControl.hide();
             this.editControl.show();
             this.isEditing = true;
         }
-    };
+    };                              */
     /**
      * Returns value from markup
-     */
+     */                             /*
     elist.EditableView.prototype.getValue = function(){
         if (this.isEditing) {
             return this.editControl.getValue();
         } else {
             return this.viewControl.getValue();
         }
-    };
+    };                             */
 
 }());
 
@@ -647,36 +678,27 @@
 
     elist.ExpenseView = function(expenseModel){
         //TODO Param validation in ExpenseView
+        var model = expenseModel;
+        this.listeners = {};
         this.model = expenseModel;
         this.parentNode = null;
+
         this.node = document.createElement("tr");
         for (var i = 0; i < 6; i+=1){
             this.node.appendChild(document.createElement("td"));
         }
-        this.viewDescription();
+
+        this.descriptionControl = new elist.EditableView(model.description, "TextView", "InputEdit", "text");
+        this.dateControl = new elist.EditableView(model.date, "DateView", "InputEdit", "date");
+        this.amountControl = new elist.EditableView(model.amount, "AmountView", "InputEdit", "number");
+
+        this.descriptionControl.renderTo(this.node.children[0]);
+        this.dateControl.renderTo(this.node.children[1]);
+        this.amountControl.renderTo(this.node.children[2]);
+
     };
 
     elist.ExpenseView.inheritFrom(elist.BaseView);
-
-    elist.ExpenseView.prototype.viewDescription = function(){
-        var view = this;
-        var model = view.model;
-        var td = view.node.children[0];
-        //TODO Fix memory leak - update() remains subscribed after view refreshing
-        var update = function(){
-            var text = document.createTextNode(model.description.get());
-            elist.empty(td).appendChild(text);
-        };
-        model.description.notify(update);
-        update();
-    };
-
-    elist.ExpenseView.prototype.editDescription = function(){
-        var model = this.model;
-        var td = this.node.children[0];
-        var input = document.createElement("input");
-        input.type = "text";
-    };
 
 }());
 
@@ -700,6 +722,7 @@
     elist.InputEdit = function(property, inputType){
         //TODO property validation in InputEdit()
         var view = this;
+        this.listeners = {};
         this.prop = property;
         this.parentNode = null;
         this.inputType = inputType;
@@ -759,6 +782,7 @@
         var view = this;
         this.prop = property;
         this.parentNode = null;
+        this.listeners = {};
 
         this.node = document.createElement("p");
 
@@ -802,16 +826,15 @@
 
     elist.ready(function(){
         var model = new elist.ExpenseModel(13);
-        model.description.set("Description");
+        model.description.set("Some text");
         model.amount.set(13);
 
-        var view = new elist.EditableView(model.amount, "AmountView", "InputEdit", "number");
+        var view = new elist.ExpenseView(model);
 
+        var table = document.createElement("table");
+        view.renderTo(table);
 
-        var div = document.createElement("div");
-        view.renderTo(div);
-
-        document.body.appendChild(div);
+        document.body.appendChild(table);
 
         setTimeout(function(){
             model.description.set("Updated");

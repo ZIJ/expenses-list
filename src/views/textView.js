@@ -19,6 +19,7 @@
         var view = this;
         this.prop = property;
         this.parentNode = null;
+        this.listeners = {};
 
         this.node = document.createElement("p");
 

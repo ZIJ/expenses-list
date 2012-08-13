@@ -18,6 +18,7 @@
     elist.AmountView = function(property){
         //TODO property validation in AmountView()
         var view = this;
+        this.listeners = {};
         this.prop = property;
         this.parentNode = null;
 

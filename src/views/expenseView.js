@@ -12,35 +12,26 @@
 
     elist.ExpenseView = function(expenseModel){
         //TODO Param validation in ExpenseView
+        var model = expenseModel;
+        this.listeners = {};
         this.model = expenseModel;
         this.parentNode = null;
+
         this.node = document.createElement("tr");
         for (var i = 0; i < 6; i+=1){
             this.node.appendChild(document.createElement("td"));
         }
-        this.viewDescription();
+
+        this.descriptionControl = new elist.EditableView(model.description, "TextView", "InputEdit", "text");
+        this.dateControl = new elist.EditableView(model.date, "DateView", "InputEdit", "date");
+        this.amountControl = new elist.EditableView(model.amount, "AmountView", "InputEdit", "number");
+
+        this.descriptionControl.renderTo(this.node.children[0]);
+        this.dateControl.renderTo(this.node.children[1]);
+        this.amountControl.renderTo(this.node.children[2]);
+
     };
 
     elist.ExpenseView.inheritFrom(elist.BaseView);
-
-    elist.ExpenseView.prototype.viewDescription = function(){
-        var view = this;
-        var model = view.model;
-        var td = view.node.children[0];
-        //TODO Fix memory leak - update() remains subscribed after view refreshing
-        var update = function(){
-            var text = document.createTextNode(model.description.get());
-            elist.empty(td).appendChild(text);
-        };
-        model.description.notify(update);
-        update();
-    };
-
-    elist.ExpenseView.prototype.editDescription = function(){
-        var model = this.model;
-        var td = this.node.children[0];
-        var input = document.createElement("input");
-        input.type = "text";
-    };
 
 }());

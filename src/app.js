@@ -12,16 +12,15 @@
 
     elist.ready(function(){
         var model = new elist.ExpenseModel(13);
-        model.description.set("Description");
+        model.description.set("Some text");
         model.amount.set(13);
 
-        var view = new elist.EditableView(model.amount, "AmountView", "InputEdit", "number");
+        var view = new elist.ExpenseView(model);
 
+        var table = document.createElement("table");
+        view.renderTo(table);
 
-        var div = document.createElement("div");
-        view.renderTo(div);
-
-        document.body.appendChild(div);
+        document.body.appendChild(table);
 
         setTimeout(function(){
             model.description.set("Updated");
