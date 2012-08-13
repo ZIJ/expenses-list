@@ -76,7 +76,7 @@
             view.sortBy("amount");
         }, false);
         this.headings.children[3].addEventListener("click",function(){
-            view.sortBy("amount");
+            view.sortBy("share");
         }, false);
 
 
@@ -146,6 +146,9 @@
                 expenseView.hide();
             });
             this.views.orderBy(function(expenseView){
+                if(propName === "share") {
+                    return expenseView.activeAmount.get();
+                }
                 return expenseView.model[propName].get();
             }, this.invertSort);
             this.invertSort = !this.invertSort;
