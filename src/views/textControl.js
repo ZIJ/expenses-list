@@ -21,6 +21,13 @@
         this.editNode = document.createElement("input");
         this.editNode.type = "text";
 
+        this.viewNode.addEventListener("click", function(){
+            control.edit();
+        }, false);
+        this.editNode.addEventListener("change", function(){
+            control.save();
+        }, false);
+
         this.prop.notify(function(){
             control.update();
         });
@@ -83,7 +90,7 @@
         var control = this;
         element.appendChild(this.node);
         this.parentNode = element;
-
+        /*
         this.viewNode.addEventListener("click", function(){
             control.edit();
         }, false);
@@ -91,7 +98,7 @@
             control.save();
         }, false);
 
-        return this;
+        return this; */
     };
 
 

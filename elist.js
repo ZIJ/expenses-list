@@ -398,11 +398,36 @@
     // BaseView extends EventEmitter
     elist.BaseView.inheritFrom(elist.EventEmitter);
 
+
+    /**
+     * Renders a view to specified DOM node
+     * @param element
+     * @return {*}
+     */
     elist.BaseView.prototype.renderTo = function(element) {
         //TODO param validation in renderTo()
-        element.appendChild(this.node);
         this.parentNode = element;
+        return this.show();
+    };
+    /**
+     * Appends view to its parent node
+     * @return {*}
+     */
+    elist.BaseView.prototype.show = function() {
+        if (!this.parentNode) {
+            elist.report("Parent node unknown. Call renderTo() first.");
+        }
+        this.parentNode.appendChild(this.node);
         return this;
+    };
+
+    elist.BaseView.prototype.hide = function() {
+        if (this.parentNode) {
+            //TODO Find out why removeChild causes DOM Exception 8
+            try {
+                this.parentNode.removeChild(this.node);
+            } catch (e) {}
+        }
     };
 
 }());
@@ -477,6 +502,13 @@
         this.editNode = document.createElement("input");
         this.editNode.type = "text";
 
+        this.viewNode.addEventListener("click", function(){
+            control.edit();
+        }, false);
+        this.editNode.addEventListener("change", function(){
+            control.save();
+        }, false);
+
         this.prop.notify(function(){
             control.update();
         });
@@ -539,7 +571,7 @@
         var control = this;
         element.appendChild(this.node);
         this.parentNode = element;
-
+        /*
         this.viewNode.addEventListener("click", function(){
             control.edit();
         }, false);
@@ -547,17 +579,17 @@
             control.save();
         }, false);
 
-        return this;
+        return this; */
     };
 
 
 }());
 
 /**
- * Created by Igor Zalutsky on 10.08.12 at 12:38
+ * Created by Igor Zalutsky on 13.08.12 at 4:14
  */
 
-(function() {
+(function () {
     "use strict";
     // publishing namespace
     if (!window.elist) {
@@ -565,20 +597,34 @@
     }
     var elist = window.elist;
     /**
-     *
-     * @param property an Observable instance
-     * @param options
+     * View for ObservableProperty with text value
+     * @param property ObservableProperty
      * @constructor
      */
-    function TextView(property, options) {
-        this.parentNode = options.parentNode;
-        this.node = document.createTextNode(property.value);
-        this.parentNode.appendChild(this.node);
-        property.subscribe(function() {
-           this.node.replaceWholeText(property.value);
+    elist.TextView = function(property){
+        //TODO property validation in TextView()
+        var view = this;
+        this.prop = property;
+        this.parentNode = null;
+        this.node = document.createElement("p");
+        this.node.addEventListener("dblclick", function(){
+            view.emit("editRequest");
+        },false);
+        this.prop.notify(function(){
+            view.update();
         });
-    }
+        this.update();
+    };
+    // TextView extends BaseView
+    elist.TextView.inheritFrom(elist.BaseView);
+
+    elist.TextView.prototype.update = function(){
+        this.node.innerHTML = this.prop.get();
+    };
+
+
 }());
+
 /**
  * Created by Igor Zalutsky on 12.08.12 at 1:41
  */
@@ -595,10 +641,9 @@
         var model = new elist.ExpenseModel(13);
         model.description.set("Description");
         //var view = new elist.ExpenseView(model);
-        var view = new elist.TextControl(model.description);
-        view.on("saveRequest", function(){
-            model.description.set(view.getText());
-            view.view();
+        var view = new elist.TextView(model.description);
+        view.on("editRequest", function(){
+            model.description.set(model.description.get() + " | ");
         });
 
         var div = document.createElement("div");

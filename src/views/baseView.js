@@ -16,11 +16,36 @@
     // BaseView extends EventEmitter
     elist.BaseView.inheritFrom(elist.EventEmitter);
 
+
+    /**
+     * Renders a view to specified DOM node
+     * @param element
+     * @return {*}
+     */
     elist.BaseView.prototype.renderTo = function(element) {
         //TODO param validation in renderTo()
-        element.appendChild(this.node);
         this.parentNode = element;
+        return this.show();
+    };
+    /**
+     * Appends view to its parent node
+     * @return {*}
+     */
+    elist.BaseView.prototype.show = function() {
+        if (!this.parentNode) {
+            elist.report("Parent node unknown. Call renderTo() first.");
+        }
+        this.parentNode.appendChild(this.node);
         return this;
+    };
+
+    elist.BaseView.prototype.hide = function() {
+        if (this.parentNode) {
+            //TODO Find out why removeChild causes DOM Exception 8
+            try {
+                this.parentNode.removeChild(this.node);
+            } catch (e) {}
+        }
     };
 
 }());

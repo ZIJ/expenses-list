@@ -14,10 +14,9 @@
         var model = new elist.ExpenseModel(13);
         model.description.set("Description");
         //var view = new elist.ExpenseView(model);
-        var view = new elist.TextControl(model.description);
-        view.on("saveRequest", function(){
-            model.description.set(view.getText());
-            view.view();
+        var view = new elist.TextView(model.description);
+        view.on("editRequest", function(){
+            model.description.set(model.description.get() + " | ");
         });
 
         var div = document.createElement("div");
