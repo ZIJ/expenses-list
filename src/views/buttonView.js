@@ -10,6 +10,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * Renders a button with given text, emits "press" event
+     * @param text
+     * @constructor
+     */
     elist.ButtonView = function(text){
 
         var view = this;
@@ -29,7 +34,7 @@
             view.update();
         });
 
-        this.update();
+        view.update();
     };
     // Extending BaseView
     elist.ButtonView.inheritFrom(elist.BaseView);

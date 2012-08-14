@@ -28,6 +28,9 @@
         this.node = document.createElement("input");
         this.node.type = inputType;
 
+        this.node.addEventListener("input", function(){
+            view.emit("input");
+        },false);
         this.node.addEventListener("change", function(){
             view.emit("change");
         },false);

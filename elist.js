@@ -695,25 +695,17 @@
         this.bar = document.createElement("div");
         this.node.appendChild(this.bar);
 
-        // create button
         this.createButton = new elist.ButtonView("Создать");
-        this.createButton.renderTo(this.bar);
         this.createButton.on("press", function(){
             view.createExpense();
         });
+        this.createButton.renderTo(this.bar);
 
-        // search label
-        this.searchLabel = document.createElement("label");
-        this.searchLabel.innerHTML = "Поиск";
-        this.bar.appendChild(this.searchLabel);
-
-        // search input
-        this.searchInput = document.createElement("input");
-        this.searchInput.type = "text";
-        this.searchInput.addEventListener("input",function(){
-            view.filter(view.searchInput.value);
-        },false);
-        this.searchLabel.appendChild(this.searchInput);
+        this.searchControl = new elist.SearchView("Поиск");
+        this.searchControl.on("query", function(){
+            view.filter(view.searchControl.query.get());
+        });
+        this.searchControl.renderTo(this.bar);
 
         // table
         this.table = document.createElement("table");
@@ -826,8 +818,8 @@
     elist.AppView.prototype.filter = function(str) {
         if (str.length > 0) {
             this.views.each(function(expenseView){
-                var description = expenseView.model.description.get();
-                if (description.indexOf(str) === -1){
+                var description = expenseView.model.description.get().toLowerCase();
+                if (description.indexOf(str.toLowerCase()) === -1){
                     expenseView.hide();
                 } else {
                     expenseView.show();
@@ -855,6 +847,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * Renders a button with given text, emits "press" event
+     * @param text
+     * @constructor
+     */
     elist.ButtonView = function(text){
 
         var view = this;
@@ -874,7 +871,7 @@
             view.update();
         });
 
-        this.update();
+        view.update();
     };
     // Extending BaseView
     elist.ButtonView.inheritFrom(elist.BaseView);
@@ -1199,6 +1196,9 @@
         this.node = document.createElement("input");
         this.node.type = inputType;
 
+        this.node.addEventListener("input", function(){
+            view.emit("input");
+        },false);
         this.node.addEventListener("change", function(){
             view.emit("change");
         },false);
@@ -1227,6 +1227,65 @@
     elist.InputEdit.prototype.getValue = function(){
         return this.node.value;
     };
+}());
+
+/**
+ * Created by Igor Zalutsky on 15.08.12 at 0:08
+ */
+
+(function () {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
+
+    elist.SearchView = function(labelText){
+
+        var view = this;
+        this.parentNode = null;
+        this.listeners = {};
+        this.isVisible = false;
+
+        this.query = new elist.ObservableProperty("");
+        this.query.notify(function(){
+            view.emit("query");
+        });
+
+        this.labelText = new elist.ObservableProperty(labelText);
+        this.labelText.notify(function(){
+            view.update();
+        });
+
+        this.node = document.createElement("label");
+
+        this.input = document.createElement("input");
+        this.input.type = "text";
+        this.input.addEventListener("input",function(){
+            view.update();
+        },false);
+
+        this.update();
+    };
+    // Extending BaseView
+    elist.SearchView.inheritFrom(elist.BaseView);
+    /**
+     * Refreshes text
+     */
+    elist.SearchView.prototype.update = function(){
+        this.node.innerHTML = this.labelText.get();
+        this.node.appendChild(this.input);  //innerHTML will remove input's markup
+        this.query.set(this.input.value);
+    };
+    /**
+     * Returns value from markup
+     */
+    elist.SearchView.prototype.getValue = function(){
+        return this.input.value;
+    };
+
+
 }());
 
 /**
