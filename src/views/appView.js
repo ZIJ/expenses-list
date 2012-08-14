@@ -30,6 +30,13 @@
         this.node.appendChild(this.bar);
 
         // create button
+        this.createButton = new elist.ButtonView("Создать");
+        this.createButton.renderTo(this.bar);
+        this.createButton.on("press", function(){
+            view.createExpense();
+        });
+
+        /*
         this.createButton = document.createElement("button");
         this.createButton.type = "button";
         this.createButton.innerHTML = "Создать";
@@ -37,6 +44,7 @@
             view.createExpense();
         }, false);
         this.bar.appendChild(this.createButton);
+        */
 
         // search label
         this.searchLabel = document.createElement("label");
