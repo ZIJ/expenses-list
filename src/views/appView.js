@@ -36,16 +36,6 @@
             view.createExpense();
         });
 
-        /*
-        this.createButton = document.createElement("button");
-        this.createButton.type = "button";
-        this.createButton.innerHTML = "Создать";
-        this.createButton.addEventListener("click", function(){
-            view.createExpense();
-        }, false);
-        this.bar.appendChild(this.createButton);
-        */
-
         // search label
         this.searchLabel = document.createElement("label");
         this.searchLabel.innerHTML = "Поиск";

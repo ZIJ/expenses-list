@@ -702,16 +702,6 @@
             view.createExpense();
         });
 
-        /*
-        this.createButton = document.createElement("button");
-        this.createButton.type = "button";
-        this.createButton.innerHTML = "Создать";
-        this.createButton.addEventListener("click", function(){
-            view.createExpense();
-        }, false);
-        this.bar.appendChild(this.createButton);
-        */
-
         // search label
         this.searchLabel = document.createElement("label");
         this.searchLabel.innerHTML = "Поиск";
@@ -1001,7 +991,7 @@
         this.viewControl.on("editRequest", function(){
             view.edit();
         });
-        this.editControl.on("saveRequest", function(){
+        this.editControl.on("change", function(){
             //TODO maybe re-emit on saveRequest in EditableView?
             var newValue = null;
             if (typeof view.editControl.inputType === "string") {
@@ -1210,11 +1200,11 @@
         this.node.type = inputType;
 
         this.node.addEventListener("change", function(){
-            view.emit("saveRequest");
+            view.emit("change");
         },false);
         this.node.addEventListener("keypress", function(event){
             if (event.keyCode === elist.keyCodes.ENTER) {
-                view.emit("saveRequest");
+                view.emit("change");
             }
         },false);
 

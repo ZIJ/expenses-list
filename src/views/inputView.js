@@ -29,11 +29,11 @@
         this.node.type = inputType;
 
         this.node.addEventListener("change", function(){
-            view.emit("saveRequest");
+            view.emit("change");
         },false);
         this.node.addEventListener("keypress", function(event){
             if (event.keyCode === elist.keyCodes.ENTER) {
-                view.emit("saveRequest");
+                view.emit("change");
             }
         },false);
 

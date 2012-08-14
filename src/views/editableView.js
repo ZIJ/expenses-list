@@ -40,7 +40,7 @@
         this.viewControl.on("editRequest", function(){
             view.edit();
         });
-        this.editControl.on("saveRequest", function(){
+        this.editControl.on("change", function(){
             //TODO maybe re-emit on saveRequest in EditableView?
             var newValue = null;
             if (typeof view.editControl.inputType === "string") {
