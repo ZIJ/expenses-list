@@ -53,7 +53,10 @@
         this.expenses.add(expense);
         return expense;
     };
-
+    /**
+     * Deletes specified ExpenseModel
+     * @param expenseModel
+     */
     elist.AppModel.prototype.deleteModel = function(expenseModel){
         //TODO Clear listeners for preventing memory leaks when deleting models
         this.expenses.remove(expenseModel);

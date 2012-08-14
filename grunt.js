@@ -44,7 +44,7 @@ module.exports = function(grunt) {
                 src: ['src/utils/*.js',
                       'src/core/eventEmitter.js', 'src/core/observableProperty.js', 'src/core/observableCollection.js',
                       'src/core/baseModel.js', 'src/core/baseView.js',
-                      'src/models/*.js', 'src/views/*.js', 'src/*.js'],
+                      'src/models/*.js', 'src/views/*.js', 'src/descriptors.js', 'src/app.js'],
                 dest: 'elist.js'
             },
             test: {

@@ -240,6 +240,7 @@
         window.elist = {};
     }
     var elist = window.elist;
+
     /**
      * Property that notifies listeners when it's value changes through set()
      * @param initialValue
@@ -249,19 +250,19 @@
         this.value = initialValue;
         this.listeners = {};
     };
-    /**
-     * ObservableProperty extends EventEmitter
-     */
+
+    // Extending EventEmitter
     elist.ObservableProperty.inheritFrom(elist.EventEmitter);
+
     /**
-     * Executes getter
+     * Returns property value
      * @return {*}
      */
     elist.ObservableProperty.prototype.get = function(){
         return this.value;
     };
     /**
-     * Executes setter and notifies listeners
+     * Sets property value, notifies listeners
      * @param newValue
      */
     elist.ObservableProperty.prototype.set = function(newValue){
@@ -270,6 +271,7 @@
             this.emit("change");
         }
     };
+
     /**
      * Shorcut for on("change", listener)
      * @param listenerFunc
@@ -277,6 +279,7 @@
     elist.ObservableProperty.prototype.notify = function(listenerFunc) {
         this.on("change", listenerFunc);
     };
+
     /**
      * Shorcut for off("change", listener)
      * @param listenerFunc
@@ -298,6 +301,7 @@
         window.elist = {};
     }
     var elist = window.elist;
+
     /**
      * Collection that emits "change" event whenever it's changed
      * @constructor
@@ -307,8 +311,14 @@
         this.items = [];
     };
 
+    // Extending EventEmitter
     elist.ObservableCollection.inheritFrom(elist.EventEmitter);
 
+    /**
+     * Searches for item by index
+     * @param index
+     * @return {*}
+     */
     elist.ObservableCollection.prototype.at = function(index) {
         if (index < 0 || index >= this.items.length) {
             elist.report("Index out of bounds");
@@ -316,14 +326,28 @@
         return this.items[index];
     };
 
+    /**
+     * Checks if it contains specified item
+     * @param item
+     * @return {Boolean}
+     */
     elist.ObservableCollection.prototype.has = function(item){
         return (this.items.indexOf(item) >= 0);
     };
 
+    /**
+     * Returns amount of items
+     * @return {Number}
+     */
     elist.ObservableCollection.prototype.count = function(){
         return this.items.length;
     };
 
+    /**
+     * Adds an item. Causes "change" event.
+     * @param item
+     * @return {*}
+     */
     elist.ObservableCollection.prototype.add = function(item){
         if (!this.has(item)) {
             this.items.push(item);
@@ -332,6 +356,11 @@
         return this;
     };
 
+    /**
+     * Removes an item. Causes "change" event
+     * @param item
+     * @return {*}
+     */
     elist.ObservableCollection.prototype.remove = function(item){
         var index = this.items.indexOf(item);
         if (index >= 0) {
@@ -340,8 +369,9 @@
         }
         return this;
     };
+
     /**
-     * Sorts collection according to comparer
+     * Sorts collection according to comparer func. Causes "change" event.
      * @param comparer Function(item1, item2), must return number, better -1 0 1
      */
     elist.ObservableCollection.prototype.sortBy = function(comparer){
@@ -350,7 +380,7 @@
         return this;
     };
     /**
-     * Sorts collection according to keyExtractor result
+     * Sorts collection according to keyExtractor result. Causes "change" event.
      * @param keyExtractor
      */
     elist.ObservableCollection.prototype.orderBy = function(keyExtractor, reverse){
@@ -366,6 +396,7 @@
             return reverse ? -result : result;
         });
     };
+
     /**
      * Calls func(item) for each item
      * @param func Function, should accept item
@@ -470,7 +501,10 @@
     }
     var elist = window.elist;
 
-
+    /**
+     * Base class for all Views, extends EventEmitter. Provides common rendering logic.
+     * @constructor
+     */
     elist.BaseView = function() {
         this.listeners = {};
         this.isVisible = false;
@@ -504,7 +538,9 @@
         }
         return this;
     };
-
+    /**
+     * Removes view from DOM
+     */
     elist.BaseView.prototype.hide = function() {
         if (this.isVisible && this.parentNode) {
             //TODO Find out why removeChild causes DOM Exception 8
@@ -572,7 +608,10 @@
         this.expenses.add(expense);
         return expense;
     };
-
+    /**
+     * Deletes specified ExpenseModel
+     * @param expenseModel
+     */
     elist.AppModel.prototype.deleteModel = function(expenseModel){
         //TODO Clear listeners for preventing memory leaks when deleting models
         this.expenses.remove(expenseModel);
@@ -676,6 +715,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * View of entire app. Contains controls and renders DOM elements.
+     * @param appModel
+     * @constructor
+     */
     elist.AppView = function(appModel){
         //TODO Param validation in ExpenseView
         var model = appModel;
@@ -691,7 +735,7 @@
         // wrapping div
         this.node = document.createElement("div");
 
-        // controls bar
+        // container for createButton and searchControl
         this.bar = document.createElement("div");
         this.node.appendChild(this.bar);
 
@@ -722,6 +766,8 @@
             this.headings.appendChild(th);
         }
 
+        //TODO refactor UGLY code below in appView
+
         this.headings.children[0].addEventListener("click",function(){
             view.sortBy("description");
         }, false);
@@ -735,17 +781,17 @@
             view.sortBy("share");
         }, false);
 
-
+        // creating views of Expenses
         this.views = new elist.ObservableCollection();
         model.expenses.each(function(expenseModel){
             var expenseView = new elist.ExpenseView(expenseModel);
             view.views.add(expenseView);
         });
-
+        // rendering views
         this.views.each(function(expenseView){
             expenseView.renderTo(view.table);
         });
-
+        // subscribing for views' events
         this.views.each(function(expenseView){
             expenseView.activeAmount.notify(function(){
                 view.updateTotalActiveAmount();
@@ -758,8 +804,12 @@
         this.updateTotalActiveAmount();
     };
 
+    // Extending BaseView
     elist.AppView.inheritFrom(elist.BaseView);
 
+    /**
+     * Recalculates total amount for active expenses
+     */
     elist.AppView.prototype.updateTotalActiveAmount = function(){
         var total = 0;
         this.views.each(function(expenseView){
@@ -772,6 +822,9 @@
         });
     };
 
+    /**
+     * Creates a new Expense and renders it
+     */
     elist.AppView.prototype.createExpense = function(){
         var appView = this;
         var model = this.model.createModel();
@@ -787,6 +840,10 @@
         view.editAll();
     };
 
+    /**
+     * Deletes an expense
+     * @param expenseView
+     */
     elist.AppView.prototype.deleteExpense = function(expenseView){
         //TODO Clear listeners for preventing memory leaks when deleting views
         expenseView.model.isActive.set(false);
@@ -796,12 +853,17 @@
         //this.updateTotalActiveAmount();
     };
 
+    /**
+     * Sorts expenses according to specified property name
+     * @param propName
+     */
     elist.AppView.prototype.sortBy = function(propName){
         if(propName) {
             this.views.each(function(expenseView){
                 expenseView.hide();
             });
             this.views.orderBy(function(expenseView){
+                //TODO refactor too specific code in AppView.sortBy()
                 if(propName === "share") {
                     return expenseView.activeAmount.get();
                 }
@@ -815,6 +877,10 @@
 
     };
 
+    /**
+     * Shows only expenses which description contains key string, case-insesitive
+     * @param str
+     */
     elist.AppView.prototype.filter = function(str) {
         if (str.length > 0) {
             this.views.each(function(expenseView){
@@ -1057,6 +1123,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * View of single Expense
+     * @param expenseModel
+     * @constructor
+     */
     elist.ExpenseView = function(expenseModel){
         //TODO Param validation in ExpenseView
         var view = this;
@@ -1081,18 +1152,21 @@
             this.node.appendChild(document.createElement("td"));
         }
 
+        // creating controls
         this.descriptionControl = new elist.EditableView(model.description, "TextView", "InputEdit", "text");
         this.dateControl = new elist.EditableView(model.date, "DateView", "InputEdit", "date");
         this.amountControl = new elist.EditableView(model.amount, "AmountView", "InputEdit", "number");
         this.activeControl = new elist.FlagView(model.isActive);
         this.shareControl = new elist.ShareView(this.activeShare);
 
+        // rendering controls
         this.descriptionControl.renderTo(this.node.children[0]);
         this.dateControl.renderTo(this.node.children[1]);
         this.amountControl.renderTo(this.node.children[2]);
         this.activeControl.renderTo(this.node.children[4]);
         this.shareControl.renderTo(this.node.children[3]);
 
+        // working with DOM
         this.deleteButton = document.createElement("button");
         this.deleteButton.type = "button";
         this.deleteButton.innerHTML = "Удалить";
@@ -1104,14 +1178,21 @@
         this.updateActiveAmount();
     };
 
+    // Extending BaseView
     elist.ExpenseView.inheritFrom(elist.BaseView);
 
+    /**
+     * Recalculates active amount and assigns it to observable property
+     */
     elist.ExpenseView.prototype.updateActiveAmount = function(){
         var isActive = this.model.isActive.get();
         var amount = this.model.amount.get();
         this.activeAmount.set(isActive ? amount : 0);
     };
 
+    /**
+     * Toggles edit mode for all editable properties
+     */
     elist.ExpenseView.prototype.editAll = function(){
         this.descriptionControl.edit();
         this.dateControl.edit();
@@ -1132,6 +1213,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * Displays checkbox which controls specified boolean observable property
+     * @param property
+     * @constructor
+     */
     elist.FlagView = function(property){
         //TODO property validation in FlagView()
         var view = this;
@@ -1149,14 +1235,17 @@
 
         this.update();
     };
+
     // FlagView extends BaseView
     elist.FlagView.inheritFrom(elist.BaseView);
+
     /**
      * Refreshes value
      */
     elist.FlagView.prototype.update = function(){
         this.node.checked = this.prop.get();
     };
+
     /**
      * Returns value from markup
      */
@@ -1179,7 +1268,7 @@
     var elist = window.elist;
 
     /**
-     * View based on input for editing ObservableProperty
+     * View based on input of specified type for editing single ObservableProperty
      * @param property ObservableProperty
      * @constructor
      */
@@ -1213,14 +1302,17 @@
         });
         this.update();
     };
+
     // InputEdit extends BaseView
     elist.InputEdit.inheritFrom(elist.BaseView);
+
     /**
      * Refreshes value
      */
     elist.InputEdit.prototype.update = function(){
         this.node.value = this.prop.get();
     };
+
     /**
      * Returns value from markup
      */
@@ -1241,6 +1333,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * Displays a search input nested in a label with specified text. Emits "query" event whenever input text is changed
+     * @param labelText
+     * @constructor
+     */
     elist.SearchView = function(labelText){
 
         var view = this;
@@ -1268,8 +1365,10 @@
 
         this.update();
     };
+
     // Extending BaseView
     elist.SearchView.inheritFrom(elist.BaseView);
+
     /**
      * Refreshes text
      */
@@ -1278,6 +1377,7 @@
         this.node.appendChild(this.input);  //innerHTML will remove input's markup
         this.query.set(this.input.value);
     };
+
     /**
      * Returns value from markup
      */
@@ -1300,6 +1400,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * Displays percentage for given numeric ObservableProperty
+     * @param property
+     * @constructor
+     */
     elist.ShareView = function(property){
         //TODO property validation in ShareView()
         var view = this;
@@ -1316,8 +1421,10 @@
 
         this.update();
     };
+
     // ShareView extends BaseView
     elist.ShareView.inheritFrom(elist.BaseView);
+
     /**
      * Refreshes text
      */
@@ -1329,6 +1436,7 @@
             this.node.innerHTML = Math.round(share * 100) + " %";
         }
     };
+
     /**
      * Returns value from markup
      */
@@ -1350,6 +1458,7 @@
         window.elist = {};
     }
     var elist = window.elist;
+
     /**
      * Self-updating View for displaying ObservableProperty with text value
      * @param property ObservableProperty
@@ -1373,14 +1482,17 @@
         });
         this.update();
     };
+
     // TextView extends BaseView
     elist.TextView.inheritFrom(elist.BaseView);
+
     /**
      * Refreshes text
      */
     elist.TextView.prototype.update = function(){
         this.node.innerHTML = this.prop.get();
     };
+
     /**
      * Returns value from markup
      */
@@ -1392,7 +1504,7 @@
 }());
 
 /**
- * Created by Igor Zalutsky on 12.08.12 at 1:41
+ * Created by Igor Zalutsky on 15.08.12 at 1:14
  */
 
 (function () {
@@ -1403,6 +1515,10 @@
     }
     var elist = window.elist;
 
+    /**
+     * Setings for initial ExpenseModels
+     * @type {Array}
+     */
     elist.descriptors = [
         {
             id: 1,
@@ -1454,13 +1570,28 @@
         }
     ];
 
-    elist.ready(function(){
+}());
 
-        var model = new elist.AppModel(elist.descriptors);
+/**
+ * Created by Igor Zalutsky on 12.08.12 at 1:41
+ */
 
-        var view = new elist.AppView(model);
+(function () {
+    "use strict";
+    // publishing namespace
+    if (!window.elist) {
+        window.elist = {};
+    }
+    var elist = window.elist;
 
-        view.renderTo(document.body);
+
+    elist.ready(function(){                                     // waiting for DOM
+
+        var model = new elist.AppModel(elist.descriptors);      // creating model of application
+
+        var view = new elist.AppView(model);                    // creating view for our model
+
+        view.renderTo(document.body);                           // rendering our view
 
     });
 

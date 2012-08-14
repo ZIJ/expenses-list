@@ -10,6 +10,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * View of entire app. Contains controls and renders DOM elements.
+     * @param appModel
+     * @constructor
+     */
     elist.AppView = function(appModel){
         //TODO Param validation in ExpenseView
         var model = appModel;
@@ -25,7 +30,7 @@
         // wrapping div
         this.node = document.createElement("div");
 
-        // controls bar
+        // container for createButton and searchControl
         this.bar = document.createElement("div");
         this.node.appendChild(this.bar);
 
@@ -56,6 +61,8 @@
             this.headings.appendChild(th);
         }
 
+        //TODO refactor UGLY code below in appView
+
         this.headings.children[0].addEventListener("click",function(){
             view.sortBy("description");
         }, false);
@@ -69,17 +76,17 @@
             view.sortBy("share");
         }, false);
 
-
+        // creating views of Expenses
         this.views = new elist.ObservableCollection();
         model.expenses.each(function(expenseModel){
             var expenseView = new elist.ExpenseView(expenseModel);
             view.views.add(expenseView);
         });
-
+        // rendering views
         this.views.each(function(expenseView){
             expenseView.renderTo(view.table);
         });
-
+        // subscribing for views' events
         this.views.each(function(expenseView){
             expenseView.activeAmount.notify(function(){
                 view.updateTotalActiveAmount();
@@ -92,8 +99,12 @@
         this.updateTotalActiveAmount();
     };
 
+    // Extending BaseView
     elist.AppView.inheritFrom(elist.BaseView);
 
+    /**
+     * Recalculates total amount for active expenses
+     */
     elist.AppView.prototype.updateTotalActiveAmount = function(){
         var total = 0;
         this.views.each(function(expenseView){
@@ -106,6 +117,9 @@
         });
     };
 
+    /**
+     * Creates a new Expense and renders it
+     */
     elist.AppView.prototype.createExpense = function(){
         var appView = this;
         var model = this.model.createModel();
@@ -121,6 +135,10 @@
         view.editAll();
     };
 
+    /**
+     * Deletes an expense
+     * @param expenseView
+     */
     elist.AppView.prototype.deleteExpense = function(expenseView){
         //TODO Clear listeners for preventing memory leaks when deleting views
         expenseView.model.isActive.set(false);
@@ -130,12 +148,17 @@
         //this.updateTotalActiveAmount();
     };
 
+    /**
+     * Sorts expenses according to specified property name
+     * @param propName
+     */
     elist.AppView.prototype.sortBy = function(propName){
         if(propName) {
             this.views.each(function(expenseView){
                 expenseView.hide();
             });
             this.views.orderBy(function(expenseView){
+                //TODO refactor too specific code in AppView.sortBy()
                 if(propName === "share") {
                     return expenseView.activeAmount.get();
                 }
@@ -149,6 +172,10 @@
 
     };
 
+    /**
+     * Shows only expenses which description contains key string, case-insesitive
+     * @param str
+     */
     elist.AppView.prototype.filter = function(str) {
         if (str.length > 0) {
             this.views.each(function(expenseView){

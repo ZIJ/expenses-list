@@ -9,6 +9,7 @@
         window.elist = {};
     }
     var elist = window.elist;
+
     /**
      * Property that notifies listeners when it's value changes through set()
      * @param initialValue
@@ -18,19 +19,19 @@
         this.value = initialValue;
         this.listeners = {};
     };
-    /**
-     * ObservableProperty extends EventEmitter
-     */
+
+    // Extending EventEmitter
     elist.ObservableProperty.inheritFrom(elist.EventEmitter);
+
     /**
-     * Executes getter
+     * Returns property value
      * @return {*}
      */
     elist.ObservableProperty.prototype.get = function(){
         return this.value;
     };
     /**
-     * Executes setter and notifies listeners
+     * Sets property value, notifies listeners
      * @param newValue
      */
     elist.ObservableProperty.prototype.set = function(newValue){
@@ -39,6 +40,7 @@
             this.emit("change");
         }
     };
+
     /**
      * Shorcut for on("change", listener)
      * @param listenerFunc
@@ -46,6 +48,7 @@
     elist.ObservableProperty.prototype.notify = function(listenerFunc) {
         this.on("change", listenerFunc);
     };
+
     /**
      * Shorcut for off("change", listener)
      * @param listenerFunc

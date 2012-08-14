@@ -10,6 +10,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * Displays a search input nested in a label with specified text. Emits "query" event whenever input text is changed
+     * @param labelText
+     * @constructor
+     */
     elist.SearchView = function(labelText){
 
         var view = this;
@@ -37,8 +42,10 @@
 
         this.update();
     };
+
     // Extending BaseView
     elist.SearchView.inheritFrom(elist.BaseView);
+
     /**
      * Refreshes text
      */
@@ -47,6 +54,7 @@
         this.node.appendChild(this.input);  //innerHTML will remove input's markup
         this.query.set(this.input.value);
     };
+
     /**
      * Returns value from markup
      */

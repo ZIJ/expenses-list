@@ -9,6 +9,7 @@
         window.elist = {};
     }
     var elist = window.elist;
+
     /**
      * Self-updating View for displaying ObservableProperty with text value
      * @param property ObservableProperty
@@ -32,14 +33,17 @@
         });
         this.update();
     };
+
     // TextView extends BaseView
     elist.TextView.inheritFrom(elist.BaseView);
+
     /**
      * Refreshes text
      */
     elist.TextView.prototype.update = function(){
         this.node.innerHTML = this.prop.get();
     };
+
     /**
      * Returns value from markup
      */

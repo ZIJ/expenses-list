@@ -10,6 +10,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * Displays checkbox which controls specified boolean observable property
+     * @param property
+     * @constructor
+     */
     elist.FlagView = function(property){
         //TODO property validation in FlagView()
         var view = this;
@@ -27,14 +32,17 @@
 
         this.update();
     };
+
     // FlagView extends BaseView
     elist.FlagView.inheritFrom(elist.BaseView);
+
     /**
      * Refreshes value
      */
     elist.FlagView.prototype.update = function(){
         this.node.checked = this.prop.get();
     };
+
     /**
      * Returns value from markup
      */

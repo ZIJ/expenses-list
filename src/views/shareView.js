@@ -10,6 +10,11 @@
     }
     var elist = window.elist;
 
+    /**
+     * Displays percentage for given numeric ObservableProperty
+     * @param property
+     * @constructor
+     */
     elist.ShareView = function(property){
         //TODO property validation in ShareView()
         var view = this;
@@ -26,8 +31,10 @@
 
         this.update();
     };
+
     // ShareView extends BaseView
     elist.ShareView.inheritFrom(elist.BaseView);
+
     /**
      * Refreshes text
      */
@@ -39,6 +46,7 @@
             this.node.innerHTML = Math.round(share * 100) + " %";
         }
     };
+
     /**
      * Returns value from markup
      */

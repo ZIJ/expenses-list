@@ -10,7 +10,10 @@
     }
     var elist = window.elist;
 
-
+    /**
+     * Base class for all Views, extends EventEmitter. Provides common rendering logic.
+     * @constructor
+     */
     elist.BaseView = function() {
         this.listeners = {};
         this.isVisible = false;
@@ -44,7 +47,9 @@
         }
         return this;
     };
-
+    /**
+     * Removes view from DOM
+     */
     elist.BaseView.prototype.hide = function() {
         if (this.isVisible && this.parentNode) {
             //TODO Find out why removeChild causes DOM Exception 8

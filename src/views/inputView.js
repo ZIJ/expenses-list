@@ -11,7 +11,7 @@
     var elist = window.elist;
 
     /**
-     * View based on input for editing ObservableProperty
+     * View based on input of specified type for editing single ObservableProperty
      * @param property ObservableProperty
      * @constructor
      */
@@ -45,14 +45,17 @@
         });
         this.update();
     };
+
     // InputEdit extends BaseView
     elist.InputEdit.inheritFrom(elist.BaseView);
+
     /**
      * Refreshes value
      */
     elist.InputEdit.prototype.update = function(){
         this.node.value = this.prop.get();
     };
+
     /**
      * Returns value from markup
      */
